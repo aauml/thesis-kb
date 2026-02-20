@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thesis Monitor — EU AI Act ↔ NIST AI RMF</title>
+  <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,500;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #FAFAF8; color: #111; min-height: 100vh; }
+    a { color: #1E40AF; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .container { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+    header { border-bottom: 2px solid #111; padding: 32px 0 20px; }
+    header .top { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+    header h1 { font-family: 'Newsreader', Georgia, serif; font-size: 36px; font-weight: 300; letter-spacing: -0.5px; }
+    header .subtitle { font-family: 'Newsreader', Georgia, serif; font-size: 15px; color: #6B7280; margin-top: 4px; font-style: italic; }
+    header .stats { display: flex; gap: 24px; margin-top: 20px; font-size: 13px; color: #6B7280; }
+    header .stats strong { color: #111; }
+
+    .refresh-area { display: flex; gap: 16px; align-items: baseline; }
+    .refresh-date { font-size: 11px; color: #9CA3AF; }
+    .refresh-btn { font-size: 12px; color: #1E40AF; background: none; border: none; cursor: pointer; font-weight: 600; }
+    .refresh-btn:hover { text-decoration: underline; }
+    .refresh-btn:disabled { color: #9CA3AF; cursor: default; text-decoration: none; }
+
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 16px 0 0; }
+    .search-input { flex: 1; min-width: 180px; padding: 8px 12px; font-size: 13px; border: 1px solid #E5E7EB; border-radius: 4px; background: #fff; outline: none; font-family: 'DM Sans', sans-serif; }
+    .search-input:focus { border-color: #9CA3AF; }
+    .imp-btn { padding: 6px 12px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; border: 1px solid #E5E7EB; border-radius: 4px; background: #fff; color: #6B7280; cursor: pointer; transition: all 0.15s; }
+    .imp-btn.active-alta { background: #DC2626; border-color: #DC2626; color: #fff; }
+    .imp-btn.active-media { background: #D97706; border-color: #D97706; color: #fff; }
+    .imp-btn.active-baja { background: #9CA3AF; border-color: #9CA3AF; color: #fff; }
+    .sort-select { padding: 6px 10px; font-size: 12px; border: 1px solid #E5E7EB; border-radius: 4px; background: #fff; color: #374151; font-family: 'DM Sans', sans-serif; }
+    .clear-btn { font-size: 12px; color: #9CA3AF; background: none; border: none; cursor: pointer; }
+    .filter-count { font-size: 12px; color: #9CA3AF; margin: 8px 0 0; }
+
+    .card { border-bottom: 1px solid #E5E7EB; padding: 24px 0; cursor: pointer; }
+    .card:hover { background: rgba(0,0,0,0.01); }
+    .card .badges { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; flex-wrap: wrap; }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 3px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; line-height: 1.6; }
+    .badge-sm { padding: 1px 6px; font-size: 10px; }
+    .card h2 { font-family: 'Newsreader', Georgia, serif; font-size: 20px; font-weight: 400; line-height: 1.35; margin-bottom: 6px; }
+    .card .meta { display: flex; gap: 12px; align-items: center; font-size: 13px; color: #9CA3AF; flex-wrap: wrap; }
+    .card .meta .scholar { color: #6B7280; font-weight: 500; }
+    .card .meta .lang { text-transform: uppercase; font-weight: 600; font-size: 11px; }
+
+    .expanded { margin-top: 16px; padding-left: 16px; border-left: 2px solid #E5E7EB; }
+    .expanded p { font-size: 14.5px; line-height: 1.7; color: #4B5563; margin-bottom: 12px; }
+    .expanded p.last { color: #111; font-weight: 500; }
+    .expanded .source-link { font-size: 13px; color: #1E40AF; font-weight: 500; }
+
+    .loading { text-align: center; padding: 80px 0; }
+    .loading h1 { font-family: 'Newsreader', Georgia, serif; font-size: 36px; font-weight: 300; margin-bottom: 8px; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #E5E7EB; border-top-color: #111; border-radius: 50%; margin: 24px auto; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty { color: #9CA3AF; padding: 40px 0; text-align: center; font-size: 14px; }
+
+    .action-label { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; }
+    .content-type { font-size: 11px; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.05em; }
+  </style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbzk2vhu-qcKFBPqEImKGEZKSitpVZv1IQQEv5ZzG7pNfo-iPUWfvSoLWWnkoc8d8PQQ/exec";
+
+const IMPORTANCE = {
+  ALTA: { bg: "#DC2626", text: "#fff", label: "Alta", cls: "active-alta" },
+  MEDIA: { bg: "#D97706", text: "#fff", label: "Media", cls: "active-media" },
+  BAJA: { bg: "#9CA3AF", text: "#fff", label: "Baja", cls: "active-baja" },
+};
+const CAPA_STYLES = {
+  "Teórica": { bg: "#EFF6FF", text: "#1E40AF", border: "#BFDBFE" },
+  "Analítica": { bg: "#F0FDF4", text: "#166534", border: "#BBF7D0" },
+  "Evaluativa": { bg: "#FAF5FF", text: "#6B21A8", border: "#E9D5FF" },
+};
+const ACTION = {
+  REFERENCE: { sym: "◆", color: "#1E40AF" },
+  CONTEXT: { sym: "○", color: "#6B7280" },
+  "FOLLOW-UP": { sym: "→", color: "#D97706" },
+  URGENT: { sym: "!", color: "#DC2626" },
+};
+
+let state = {
+  data: [],
+  search: "",
+  filterImp: null,
+  sortBy: "date-desc",
+  expanded: {},
+  loading: true,
+  lastRefresh: null,
+  refreshing: false,
+};
+
+function formatDate(d) {
+  if (!d) return "";
+  const date = new Date(d);
+  if (isNaN(date.getTime())) return String(d);
+  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+}
+
+function parseDate(d) {
+  if (!d) return 0;
+  const date = new Date(d);
+  return isNaN(date.getTime()) ? 0 : date.getTime();
+}
+
+function normalize(rows) {
+  return rows.map(r => ({
+    ...r,
+    capa: (r.capa || "").replace(/Teorica/g, "Teórica").replace(/Analitica/g, "Analítica")
+  }));
+}
+
+function sortRows(rows, sortBy) {
+  return [...rows].sort((a, b) => {
+    if (sortBy === "date-desc") return parseDate(b.date_published) - parseDate(a.date_published);
+    if (sortBy === "date-asc") return parseDate(a.date_published) - parseDate(b.date_published);
+    const o = { ALTA: 0, MEDIA: 1, BAJA: 2 };
+    const d = (o[a.importance] ?? 3) - (o[b.importance] ?? 3);
+    return d !== 0 ? d : parseDate(b.date_published) - parseDate(a.date_published);
+  });
+}
+
+function getFiltered() {
+  let rows = state.data;
+  if (state.filterImp) rows = rows.filter(r => r.importance === state.filterImp);
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    rows = rows.filter(r => {
+      const hay = [r.title, r.source, r.scholar, r.thesis_relevance, r.capa_detail, r.action_tag, r.capa]
+        .filter(Boolean).join(" ").toLowerCase();
+      return hay.includes(q);
+    });
+  }
+  return sortRows(rows, state.sortBy);
+}
+
+function getCounts() {
+  const c = { ALTA: 0, MEDIA: 0, BAJA: 0 };
+  state.data.forEach(d => { if (c[d.importance] !== undefined) c[d.importance]++; });
+  return c;
+}
+
+async function fetchData() {
+  const res = await fetch(API_URL + "?action=getAll");
+  const json = await res.json();
+  return normalize(json.rows || []);
+}
+
+async function loadData() {
+  try {
+    state.data = await fetchData();
+    const dates = state.data.map(r => r.date_found).filter(Boolean).sort();
+    state.lastRefresh = dates.length > 0 ? dates[dates.length - 1] : new Date().toISOString();
+  } catch (e) {
+    console.error("Load failed:", e);
+  }
+  state.loading = false;
+  render();
+}
+
+async function refresh() {
+  state.refreshing = true;
+  render();
+  try {
+    state.data = await fetchData();
+    state.lastRefresh = new Date().toISOString();
+  } catch (e) {
+    console.error("Refresh failed:", e);
+  }
+  state.refreshing = false;
+  render();
+}
+
+function esc(s) {
+  const d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderBadge(label, bg, text, border, small) {
+  const cls = small ? "badge badge-sm" : "badge";
+  const borderStyle = border ? `border: 1px solid ${border};` : "";
+  return `<span class="${cls}" style="background:${bg};color:${text};${borderStyle}">${esc(label)}</span>`;
+}
+
+function renderCard(item, idx) {
+  const imp = IMPORTANCE[item.importance] || IMPORTANCE.BAJA;
+  const capas = (item.capa || "").split(",").map(c => c.trim()).filter(Boolean);
+  const act = ACTION[item.action_tag] || ACTION.CONTEXT;
+  const isOpen = state.expanded[item.url + idx];
+
+  let badges = renderBadge(imp.label, imp.bg, imp.text, null, false);
+  capas.forEach(c => {
+    const match = Object.entries(CAPA_STYLES).find(([k]) => c.includes(k));
+    const st = match ? match[1] : { bg: "#F3F4F6", text: "#374151", border: "#E5E7EB" };
+    badges += renderBadge(c, st.bg, st.text, st.border, true);
+  });
+  badges += `<span class="action-label" style="color:${act.color}">${act.sym} ${esc(item.action_tag || "")}</span>`;
+  if (item.content_type) badges += `<span class="content-type">${esc(item.content_type)}</span>`;
+
+  let meta = `<span>${esc(item.source || "")}</span>`;
+  if (item.date_published) meta += `<span>·</span><span>${formatDate(item.date_published)}</span>`;
+  if (item.scholar) meta += `<span>·</span><span class="scholar">${esc(item.scholar)}</span>`;
+  if (item.language && item.language !== "en") meta += `<span>·</span><span class="lang">${esc(item.language)}</span>`;
+
+  let expandedHtml = "";
+  if (isOpen && item.thesis_relevance) {
+    const paras = item.thesis_relevance.split(/\n\n|\n/).filter(p => p.trim());
+    let parasHtml = paras.map((p, i) =>
+      `<p class="${i === paras.length - 1 ? 'last' : ''}">${esc(p)}</p>`
+    ).join("");
+    if (item.url) parasHtml += `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer" class="source-link" onclick="event.stopPropagation()">Read source →</a>`;
+    expandedHtml = `<div class="expanded">${parasHtml}</div>`;
+  }
+
+  return `<div class="card" onclick="toggleCard('${item.url + idx}')">
+    <div class="badges">${badges}</div>
+    <h2>${esc(item.title || "")}</h2>
+    <div class="meta" style="margin-bottom:${isOpen ? '16px' : '0'}">${meta}</div>
+    ${expandedHtml}
+  </div>`;
+}
+
+function render() {
+  const app = document.getElementById("app");
+
+  if (state.loading) {
+    app.innerHTML = `<div class="container loading">
+      <h1>Thesis Monitor</h1>
+      <p style="color:#9CA3AF;font-size:14px">Loading research data...</p>
+      <div class="spinner"></div>
+    </div>`;
+    return;
+  }
+
+  const filtered = getFiltered();
+  const counts = getCounts();
+  const anyFilter = state.search.length > 0 || state.filterImp !== null;
+
+  let impButtons = ["ALTA", "MEDIA", "BAJA"].map(imp => {
+    const active = state.filterImp === imp;
+    const cls = active ? `imp-btn ${IMPORTANCE[imp].cls}` : "imp-btn";
+    return `<button class="${cls}" onclick="toggleImp('${imp}')">${imp}</button>`;
+  }).join("");
+
+  const sortOptions = [
+    { value: "date-desc", label: "Newest first" },
+    { value: "date-asc", label: "Oldest first" },
+    { value: "importance", label: "By importance" },
+  ].map(o => `<option value="${o.value}" ${state.sortBy === o.value ? "selected" : ""}>${o.label}</option>`).join("");
+
+  let filterInfo = "";
+  if (anyFilter) filterInfo = `<p class="filter-count">Showing ${filtered.length} of ${state.data.length}</p>`;
+
+  let clearBtn = "";
+  if (anyFilter) clearBtn = `<button class="clear-btn" onclick="clearFilters()">Clear</button>`;
+
+  const cards = filtered.length === 0
+    ? `<p class="empty">No results match your filters.</p>`
+    : filtered.map((item, idx) => renderCard(item, idx)).join("");
+
+  app.innerHTML = `
+    <div class="container">
+      <header>
+        <div class="top">
+          <h1>Thesis Monitor</h1>
+          <div class="refresh-area">
+            ${state.lastRefresh ? `<span class="refresh-date">${formatDate(state.lastRefresh)}</span>` : ""}
+            <button class="refresh-btn" onclick="refresh()" ${state.refreshing ? "disabled" : ""}>
+              ${state.refreshing ? "↻ Loading..." : "↻ Refresh"}
+            </button>
+          </div>
+        </div>
+        <p class="subtitle">EU AI Act ↔ NIST AI RMF Interoperability</p>
+        <div class="stats">
+          <span><strong>${state.data.length}</strong> items</span>
+          <span style="color:#DC2626"><strong>${counts.ALTA}</strong> alta</span>
+          <span style="color:#D97706"><strong>${counts.MEDIA}</strong> media</span>
+          <span style="color:#9CA3AF"><strong>${counts.BAJA}</strong> baja</span>
+        </div>
+      </header>
+
+      <div class="filters">
+        <input type="text" class="search-input" placeholder="Search articles, scholars, topics..."
+          value="${esc(state.search)}" oninput="updateSearch(this.value)">
+        ${impButtons}
+        <select class="sort-select" onchange="updateSort(this.value)">${sortOptions}</select>
+        ${clearBtn}
+      </div>
+      ${filterInfo}
+
+      <main style="padding-bottom:80px">
+        ${cards}
+      </main>
+    </div>`;
+}
+
+// Event handlers
+window.toggleCard = function(key) {
+  state.expanded[key] = !state.expanded[key];
+  render();
+};
+window.toggleImp = function(imp) {
+  state.filterImp = state.filterImp === imp ? null : imp;
+  render();
+};
+window.updateSearch = function(val) {
+  state.search = val;
+  render();
+};
+window.updateSort = function(val) {
+  state.sortBy = val;
+  render();
+};
+window.clearFilters = function() {
+  state.search = "";
+  state.filterImp = null;
+  render();
+};
+
+// Init
+loadData();
+</script>
+</body>
+</html>
