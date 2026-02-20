@@ -32,15 +32,7 @@
   .btn-refresh { font-size: 12px; font-weight: 600; color: #1E40AF; background: none; border: none; padding: 0; }
   .btn-refresh:disabled { color: #9CA3AF; cursor: default; }
 
-  /* ── View tabs ── */
-  .view-tabs { display: flex; border-bottom: 1px solid #E5E7EB; margin-top: 20px; }
-  .view-tab {
-    padding: 10px 20px; font-size: 13px; font-weight: 500;
-    background: none; border: none; color: #6B7280;
-    border-bottom: 2px solid transparent; margin-bottom: -1px;
-  }
-  .view-tab.active { color: #111; border-bottom-color: #111; }
-  .view-tab:hover:not(.active) { color: #374151; }
+
 
   /* ── Search bar ── */
   .search-bar {
@@ -76,20 +68,7 @@
   }
   .btn-export:hover { border-color: #93C5FD; color: #1E40AF; }
 
-  /* ── Run group (newsfeed) ── */
-  .run-group { margin-top: 32px; }
-  .run-header {
-    display: flex; align-items: baseline; gap: 12px;
-    padding-bottom: 10px; border-bottom: 2px solid #111;
-  }
-  .run-date { font-family: Georgia, serif; font-size: 20px; font-weight: 400; }
-  .run-id-label { font-size: 11px; color: #9CA3AF; font-family: monospace; }
-  .run-summary { margin-left: auto; display: flex; gap: 8px; }
-  .run-count { padding: 2px 8px; border-radius: 3px; font-weight: 600; font-size: 11px; }
-  .run-count-alta  { background: #FEE2E2; color: #991B1B; }
-  .run-count-media { background: #FEF3C7; color: #92400E; }
-  .run-count-baja  { background: #F3F4F6; color: #6B7280; }
-  .run-count-total { background: #EFF6FF; color: #1E40AF; }
+
 
   /* ── Importance filters (always visible, all tabs) ── */
   .imp-filters {
@@ -222,12 +201,6 @@
     <div class="header-stats" id="headerStats"><span>Loading…</span></div>
   </header>
 
-  <!-- View tabs -->
-  <div class="view-tabs">
-    <button class="view-tab active" id="tab-newsfeed"  onclick="switchView('newsfeed')">📰 Newsfeed</button>
-    <button class="view-tab"        id="tab-archive"   onclick="switchView('archive')">🗂 Archive</button>
-    <button class="view-tab"        id="tab-published" onclick="switchView('published')">📅 By Publish Date</button>
-  </div>
 
   <!-- Importance filters — persistent across all tabs -->
   <div class="imp-filters">
@@ -242,8 +215,8 @@
            onkeydown="if(event.key==='Enter')submitSearch()" />
     <button class="btn-search" onclick="submitSearch()">Search</button>
     <button class="btn-clear" id="btnClear" onclick="clearSearch()" style="display:none">✕ Clear</button>
-    <select id="selSort" onchange="applySort()" style="display:none">
-      <option value="date-desc">Found: newest first</option>
+    <select id="selSort" onchange="applySort()">
+      <option value="date-desc" selected>Found: newest first</option>
       <option value="date-asc">Found: oldest first</option>
       <option value="date-published-desc">Published: newest first</option>
       <option value="date-published-asc">Published: oldest first</option>
@@ -265,57 +238,27 @@
 
 <script>
 // ── Config ───────────────────────────────────────────────────
-const API_URL        = "https://script.google.com/macros/s/AKfycbzk2vhu-qcKFBPqEImKGEZKSitpVZv1IQQEv5ZzG7pNfo-iPUWfvSoLWWnkoc8d8PQQ/exec";
-const PAGE_LIMIT     = 50;
-const NEWSFEED_LIMIT = 5;
+const API_URL    = "https://script.google.com/macros/s/AKfycbzk2vhu-qcKFBPqEImKGEZKSitpVZv1IQQEv5ZzG7pNfo-iPUWfvSoLWWnkoc8d8PQQ/exec";
+const PAGE_LIMIT = 50;
 
 // ── State ────────────────────────────────────────────────────
 let state = {
-  view: "newsfeed",
   page: 1, search: "", importance: "",
-  rows: [], groups: [],
+  rows: [],
   total: 0, total_pages: 1, has_next: false, has_prev: false,
   loading: false, lastFetch: null,
 };
 let expandedIds = new Set();
 
-// ── View switching ───────────────────────────────────────────
-function switchView(view) {
-  state.view = view;
-  state.page = 1;
-  expandedIds.clear();
-
-  ["newsfeed","archive","published"].forEach(v =>
-    document.getElementById("tab-" + v).classList.toggle("active", v === view)
-  );
-
-  const sortEl = document.getElementById("selSort");
-  if (view === "newsfeed") {
-    sortEl.style.display = "none";
-  } else {
-    sortEl.style.display = "";
-    sortEl.value = view === "published" ? "date-published-desc" : "date-desc";
-  }
-
-  fetchData();
-}
-
 // ── Build URL ────────────────────────────────────────────────
 function buildUrl() {
-  const isNewsfeed = state.view === "newsfeed";
-  const action = isNewsfeed ? "getNewsfeed" : "getPage";
-  const limit  = isNewsfeed ? NEWSFEED_LIMIT : PAGE_LIMIT;
-
-  let url = API_URL + "?action=" + action
+  let url = API_URL + "?action=getPage"
     + "&page=" + state.page
-    + "&limit=" + limit;
+    + "&limit=" + PAGE_LIMIT;
 
   if (state.importance) url += "&importance=" + encodeURIComponent(state.importance);
-  if (state.search)     url += "&search=" + encodeURIComponent(state.search);
-
-  if (!isNewsfeed) {
-    url += "&sort=" + encodeURIComponent(document.getElementById("selSort").value);
-  }
+  if (state.search)     url += "&search="     + encodeURIComponent(state.search);
+  url += "&sort=" + encodeURIComponent(document.getElementById("selSort").value);
 
   return url;
 }
@@ -352,9 +295,7 @@ async function fetchData() {
     state.page        = data.page || state.page;
     state.lastFetch   = new Date();
 
-    if (state.view === "newsfeed") state.groups = data.groups || [];
-    else                           state.rows   = data.rows   || [];
-
+    state.rows = data.rows || [];
     renderHeader(data.stats || null);
     renderMainContent();
     renderPagination();
@@ -409,7 +350,7 @@ function goPage(p) { state.page = p; fetchData(); }
 
 // ── Render ───────────────────────────────────────────────────
 function renderMainContent() {
-  state.view === "newsfeed" ? renderNewsfeed() : renderFlat();
+  renderFlat();
 }
 
 function renderHeader(stats) {
@@ -430,31 +371,6 @@ function renderHeader(stats) {
   document.getElementById("filterCount").textContent = state.total_pages > 1
     ? `Page ${state.page} of ${state.total_pages} · ${state.total} items`
     : (isFiltered && state.total ? `${state.total} matching` : "");
-}
-
-// ── Newsfeed ─────────────────────────────────────────────────
-function renderNewsfeed() {
-  if (!state.groups || !state.groups.length) {
-    renderMain('<div class="state-msg">No scan runs found. Run <code>news</code> to populate.</div>');
-    return;
-  }
-  renderMain(state.groups.map(group => {
-    const runLabel = group.run_id && group.run_id !== group.date ? group.run_id : "";
-    return `
-      <div class="run-group">
-        <div class="run-header">
-          <span class="run-date">${formatRunDate(group.date)}</span>
-          ${runLabel ? `<span class="run-id-label">${runLabel}</span>` : ""}
-          <div class="run-summary">
-            ${group.alta  ? `<span class="run-count run-count-alta">${group.alta} Alta</span>`   : ""}
-            ${group.media ? `<span class="run-count run-count-media">${group.media} Media</span>` : ""}
-            ${group.baja  ? `<span class="run-count run-count-baja">${group.baja} Baja</span>`   : ""}
-            <span class="run-count run-count-total">${group.total}</span>
-          </div>
-        </div>
-        ${group.rows.map((item, i) => renderCard(item, group.run_id + "-" + i)).join("")}
-      </div>`;
-  }).join(""));
 }
 
 // ── Flat ─────────────────────────────────────────────────────
@@ -588,18 +504,10 @@ function formatDate(d) {
   return dt.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 }
 
-function formatRunDate(d) {
-  if (!d || d === "unknown") return "Unknown date";
-  const dt = new Date(d);
-  if (isNaN(dt)) return d;
-  return dt.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-}
 
 // ── Export ───────────────────────────────────────────────────
 function exportMarkdown() {
-  const items = state.view === "newsfeed"
-    ? (state.groups || []).flatMap(g => g.rows)
-    : (state.rows || []);
+  const items = state.rows || [];
   if (!items.length) { alert("Nothing to export."); return; }
 
   const lines = ["# Thesis Monitor Export", `_${new Date().toLocaleDateString()}_`, ""];
