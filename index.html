@@ -91,6 +91,21 @@
   .run-count-baja  { background: #F3F4F6; color: #6B7280; }
   .run-count-total { background: #EFF6FF; color: #1E40AF; }
 
+  /* ── Importance filters (always visible, all tabs) ── */
+  .imp-filters {
+    display: flex; gap: 6px; align-items: center;
+    padding-top: 10px; flex-wrap: wrap;
+  }
+  .btn-imp {
+    padding: 4px 10px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    border: 1px solid #E5E7EB; border-radius: 3px;
+    background: #fff; color: #6B7280;
+  }
+  .btn-imp.active-ALTA  { background: #DC2626; border-color: #DC2626; color: #fff; }
+  .btn-imp.active-MEDIA { background: #D97706; border-color: #D97706; color: #fff; }
+  .btn-imp.active-BAJA  { background: #9CA3AF; border-color: #9CA3AF; color: #fff; }
+
   /* ── Cards ── */
   main { padding: 0 0 80px; }
   article {
@@ -100,13 +115,17 @@
   }
   article:hover { background: #F9FAFB; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
 
-  /* Importance badge — standalone first line */
+  /* ── Top line: [importance badge] capa · action · type · tier — all inline ── */
+  .card-top-line {
+    display: flex; flex-wrap: wrap; align-items: center;
+    gap: 0; margin-bottom: 7px; font-size: 11px; line-height: 1.8;
+  }
   .card-imp {
-    display: inline-block;
+    display: inline-flex; align-items: center;
     padding: 2px 10px; border-radius: 3px;
     font-size: 11px; font-weight: 700;
     letter-spacing: 0.06em; text-transform: uppercase;
-    line-height: 1.6; margin-bottom: 7px;
+    line-height: 1.6; margin-right: 8px; flex-shrink: 0;
   }
   .imp-ALTA  { background: #DC2626; color: #fff; }
   .imp-MEDIA { background: #D97706; color: #fff; }
@@ -116,34 +135,19 @@
   .card-title {
     font-family: Georgia, serif;
     font-size: 19px; font-weight: 400; line-height: 1.35;
-    margin: 0 0 6px; color: #111;
+    margin: 0 0 5px; color: #111;
   }
 
-  /* Source / date / scholar line */
+  /* Source / date / scholar — same muted line style as metadata */
   .card-byline {
-    font-size: 13px; color: #9CA3AF;
-    display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
-    margin-bottom: 5px;
+    font-size: 12px; color: #9CA3AF;
+    display: flex; gap: 0; flex-wrap: wrap; align-items: center;
+    margin-bottom: 0;
   }
   .card-byline .scholar { color: #6B7280; font-weight: 500; }
   .card-byline .lang { text-transform: uppercase; font-weight: 600; font-size: 11px; }
 
-  /* ── Metadata line: capa · action · type · tier ── */
-  /* Single line, all lowercase, separated by thin dots, muted colors */
-  .card-meta-line {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0;
-    font-size: 11px;
-    line-height: 1.8;
-    margin-top: 2px;
-  }
-  .meta-sep {
-    color: #D1D5DB;
-    padding: 0 5px;
-    user-select: none;
-  }
+  .meta-sep { color: #D1D5DB; padding: 0 5px; user-select: none; }
 
   /* Capa tokens — colored text, no background */
   .meta-capa-teorica   { color: #1E40AF; font-weight: 500; }
@@ -225,7 +229,14 @@
     <button class="view-tab"        id="tab-published" onclick="switchView('published')">📅 By Publish Date</button>
   </div>
 
-  <!-- Search bar (search + sort only, no filter buttons) -->
+  <!-- Importance filters — persistent across all tabs -->
+  <div class="imp-filters">
+    <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">Alta</button>
+    <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">Media</button>
+    <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">Baja</button>
+  </div>
+
+  <!-- Search bar -->
   <div class="search-bar">
     <input type="text" id="searchInput" placeholder="Search title, scholar, topic…"
            onkeydown="if(event.key==='Enter')submitSearch()" />
@@ -261,7 +272,7 @@ const NEWSFEED_LIMIT = 5;
 // ── State ────────────────────────────────────────────────────
 let state = {
   view: "newsfeed",
-  page: 1, search: "",
+  page: 1, search: "", importance: "",
   rows: [], groups: [],
   total: 0, total_pages: 1, has_next: false, has_prev: false,
   loading: false, lastFetch: null,
@@ -299,7 +310,8 @@ function buildUrl() {
     + "&page=" + state.page
     + "&limit=" + limit;
 
-  if (state.search) url += "&search=" + encodeURIComponent(state.search);
+  if (state.importance) url += "&importance=" + encodeURIComponent(state.importance);
+  if (state.search)     url += "&search=" + encodeURIComponent(state.search);
 
   if (!isNewsfeed) {
     url += "&sort=" + encodeURIComponent(document.getElementById("selSort").value);
@@ -359,6 +371,19 @@ async function fetchData() {
 
 function refresh() { fetchData(); }
 
+function toggleImp(imp) {
+  ["ALTA","MEDIA","BAJA"].forEach(i => {
+    const btn = document.getElementById("btn-" + i);
+    const wasActive = btn.classList.contains("active-" + i);
+    btn.className = "btn-imp" + (i === imp && !wasActive ? " active-" + i : "");
+  });
+  state.importance = document.getElementById("btn-ALTA").classList.contains("active-ALTA")   ? "ALTA"
+                   : document.getElementById("btn-MEDIA").classList.contains("active-MEDIA") ? "MEDIA"
+                   : document.getElementById("btn-BAJA").classList.contains("active-BAJA")   ? "BAJA" : "";
+  state.page = 1;
+  fetchData();
+}
+
 function submitSearch() {
   state.search = document.getElementById("searchInput").value.trim();
   state.page = 1;
@@ -368,9 +393,10 @@ function submitSearch() {
 
 function clearSearch() {
   document.getElementById("searchInput").value = "";
-  state.search = "";
+  state.search = ""; state.importance = "";
   state.page = 1;
   document.getElementById("btnClear").style.display = "none";
+  ["ALTA","MEDIA","BAJA"].forEach(i => document.getElementById("btn-" + i).className = "btn-imp");
   fetchData();
 }
 
@@ -394,14 +420,16 @@ function renderHeader(stats) {
       <span style="color:#DC2626;font-weight:600">${stats.alta}</span> Alta ·
       <span style="color:#D97706;font-weight:600">${stats.media}</span> Media ·
       <span style="color:#9CA3AF;font-weight:600">${stats.baja}</span> Baja
-      ${state.search ? `<span>· <strong>${state.total}</strong> matching</span>` : ""}
+      ${(state.search || state.importance) ? `<span>· <strong>${state.total}</strong> matching</span>` : ""}
     `;
   } else {
     el.innerHTML = `<span><strong>${state.total}</strong> ${state.search ? "matching" : "total"} items</span>`;
   }
 
+  const isFiltered = state.search || state.importance;
   document.getElementById("filterCount").textContent = state.total_pages > 1
-    ? `Page ${state.page} of ${state.total_pages} · ${state.total} items` : "";
+    ? `Page ${state.page} of ${state.total_pages} · ${state.total} items`
+    : (isFiltered && state.total ? `${state.total} matching` : "");
 }
 
 // ── Newsfeed ─────────────────────────────────────────────────
@@ -442,7 +470,7 @@ function renderFlat() {
 function renderCard(item, id) {
   const imp    = item.importance || "BAJA";
   const act    = item.action_tag || "CONTEXT";
-  const tier   = String(item.tier || "");
+  const tier   = String(item.tier ?? "").trim();
   const isOpen = expandedIds.has(id);
 
   // ── Byline: source · date · scholar · lang ──
@@ -504,10 +532,11 @@ function renderCard(item, id) {
 
   return `
     <article onclick="toggleCard('${id}')">
-      <span class="card-imp imp-${imp}">${{ALTA:"Alta",MEDIA:"Media",BAJA:"Baja"}[imp]||imp}</span>
+      <div class="card-top-line">
+        <span class="card-imp imp-${imp}">${{ALTA:"Alta",MEDIA:"Media",BAJA:"Baja"}[imp]||imp}</span>${metaLine}
+      </div>
       <h2 class="card-title">${item.title || "(no title)"}</h2>
       <div class="card-byline">${byline}</div>
-      <div class="card-meta-line">${metaLine}</div>
       <div class="card-body${isOpen ? " open" : ""}" id="${id}">
         ${bodyParas}
         ${link}
