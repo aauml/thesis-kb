@@ -76,11 +76,18 @@
   }
   .btn-search:hover { background: #1e3a8a; border-color: #1e3a8a; }
   select {
-    padding: 6px 8px; font-size: 12px;
+    padding: 6px 6px; font-size: 12px;
     border: 1px solid #E5E7EB; border-radius: 4px;
     background: #fff; color: #374151;
     font-family: inherit; cursor: pointer;
+    max-width: 140px;
   }
+  .btn-clear-filters {
+    background: none; border: 1px solid #E5E7EB; border-radius: 3px;
+    font-size: 11px; color: #9CA3AF;
+    padding: 4px 8px; cursor: pointer; line-height: 1;
+  }
+  .btn-clear-filters:hover { border-color: #DC2626; color: #DC2626; }
   .filter-count { font-size: 12px; color: #9CA3AF; padding: 6px 0 0; }
 
   /* ── Export bar ── */
@@ -205,20 +212,21 @@
       <button class="btn-clear-x" id="btnClearX" onclick="clearSearch()" title="Clear search">✕</button>
     </div>
     <button class="btn-search" onclick="submitSearch()">Search</button>
-    <select id="selSort" onchange="applySort()">
-      <option value="found-desc" selected>Found: newest first</option>
-      <option value="found-asc">Found: oldest first</option>
-      <option value="date-desc">Published: newest first</option>
-      <option value="date-asc">Published: oldest first</option>
-      <option value="importance">By importance</option>
-    </select>
   </div>
 
-  <!-- Importance filters -->
+  <!-- Filters row: importance + sort + clear all -->
   <div class="imp-filters">
     <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">Alta</button>
     <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">Media</button>
     <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">Baja</button>
+    <select id="selSort" onchange="applySort()">
+      <option value="found-desc" selected>Found: newest</option>
+      <option value="found-asc">Found: oldest</option>
+      <option value="date-desc">Published: newest</option>
+      <option value="date-asc">Published: oldest</option>
+      <option value="importance">By importance</option>
+    </select>
+    <button class="btn-clear-filters" id="btnClearFilters" onclick="clearAllFilters()" title="Clear all filters" style="display:none">✕</button>
   </div>
   <p class="filter-count" id="filterCount"></p>
 
@@ -318,6 +326,7 @@ function toggleImp(imp) {
                    : document.getElementById("btn-MEDIA").classList.contains("active-MEDIA") ? "MEDIA"
                    : document.getElementById("btn-BAJA").classList.contains("active-BAJA")   ? "BAJA" : "";
   state.page = 1;
+  updateFiltersClearBtn();
   fetchData();
 }
 
@@ -325,6 +334,7 @@ function submitSearch() {
   state.search = document.getElementById("searchInput").value.trim();
   state.page = 1;
   updateXBtn();
+  updateFiltersClearBtn();
   fetchData();
 }
 
@@ -333,12 +343,28 @@ function clearSearch() {
   state.search = "";
   state.page = 1;
   updateXBtn();
+  updateFiltersClearBtn();
+  fetchData();
+}
+
+function clearAllFilters() {
+  document.getElementById("searchInput").value = "";
+  document.getElementById("selSort").value = "found-desc";
+  ["ALTA","MEDIA","BAJA"].forEach(i => document.getElementById("btn-" + i).className = "btn-imp");
+  state.search = ""; state.importance = ""; state.sort = "found-desc"; state.page = 1;
+  updateXBtn();
+  updateFiltersClearBtn();
   fetchData();
 }
 
 function updateXBtn() {
   const val = document.getElementById("searchInput").value;
   document.getElementById("btnClearX").style.display = val ? "block" : "none";
+}
+
+function updateFiltersClearBtn() {
+  const active = state.importance || state.search;
+  document.getElementById("btnClearFilters").style.display = active ? "inline" : "none";
 }
 
 function applySort() {
