@@ -196,13 +196,6 @@
     <div class="header-stats" id="headerStats"><span>Loading…</span></div>
   </header>
 
-  <!-- Importance filters -->
-  <div class="imp-filters">
-    <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">Alta</button>
-    <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">Media</button>
-    <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">Baja</button>
-  </div>
-
   <!-- Search bar -->
   <div class="search-bar">
     <div class="search-wrap">
@@ -219,6 +212,13 @@
       <option value="date-asc">Published: oldest first</option>
       <option value="importance">By importance</option>
     </select>
+  </div>
+
+  <!-- Importance filters -->
+  <div class="imp-filters">
+    <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">Alta</button>
+    <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">Media</button>
+    <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">Baja</button>
   </div>
   <p class="filter-count" id="filterCount"></p>
 
