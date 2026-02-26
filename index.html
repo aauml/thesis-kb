@@ -15,38 +15,44 @@
   a { color: #1E40AF; text-decoration: none; }
   a:hover { text-decoration: underline; }
   button { font-family: inherit; cursor: pointer; }
-  .container { max-width: 820px; margin: 0 auto; padding: 0 24px; }
+  .container { max-width: 820px; margin: 0 auto; padding: 0 16px; }
 
   /* ── Header ── */
-  header { border-bottom: 2px solid #111; padding: 28px 0 16px; }
+  header { border-bottom: 2px solid #111; padding: 20px 0 14px; }
   .header-top {
     display: flex; justify-content: space-between; align-items: baseline;
     margin-bottom: 2px;
   }
-  h1 { font-family: Georgia, serif; font-size: 28px; font-weight: 300; letter-spacing: -0.5px; }
-  .header-sub { font-family: Georgia, serif; font-size: 13px; color: #6B7280; font-style: italic; margin-bottom: 12px; }
-  .header-stats { display: flex; gap: 16px; font-size: 12px; color: #6B7280; flex-wrap: wrap; align-items: center; }
+  h1 { font-family: Georgia, serif; font-size: 24px; font-weight: 300; letter-spacing: -0.5px; }
+  .header-sub { font-family: Georgia, serif; font-size: 12px; color: #6B7280; font-style: italic; margin-bottom: 10px; }
+  .header-stats { display: flex; gap: 12px; font-size: 12px; color: #6B7280; flex-wrap: wrap; align-items: center; }
   .header-stats strong { color: #111; }
-  .refresh-area { display: flex; gap: 12px; align-items: baseline; }
+  .refresh-area { display: flex; gap: 10px; align-items: baseline; flex-shrink: 0; }
   .last-fetch { font-size: 11px; color: #9CA3AF; }
-  .btn-refresh { font-size: 12px; font-weight: 600; color: #1E40AF; background: none; border: none; padding: 0; }
+  .btn-refresh { font-size: 12px; font-weight: 600; color: #1E40AF; background: none; border: none; padding: 0; white-space: nowrap; }
   .btn-refresh:disabled { color: #9CA3AF; cursor: default; }
 
-  /* ── Controls row ── */
-  .controls {
-    padding: 12px 0 0;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    align-items: center;
+  /* ── Controls ── */
+  /* Row 1: toggles only */
+  .controls-row1 {
+    padding: 10px 0 0;
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
   }
+  /* Row 2: dropdowns + search */
+  .controls-row2 {
+    padding: 6px 0 0;
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  }
+
+  .ctrl-sep { width: 1px; height: 20px; background: #E5E7EB; margin: 0 1px; flex-shrink: 0; }
 
   /* Importance toggles */
   .btn-imp {
-    padding: 4px 10px; font-size: 11px; font-weight: 700;
+    padding: 5px 11px; font-size: 11px; font-weight: 700;
     letter-spacing: 0.05em; text-transform: uppercase;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #6B7280; white-space: nowrap;
+    min-height: 30px;
   }
   .btn-imp.active-ALTA  { background: #DC2626; border-color: #DC2626; color: #fff; }
   .btn-imp.active-MEDIA { background: #D97706; border-color: #D97706; color: #fff; }
@@ -54,32 +60,31 @@
 
   /* Capa toggles */
   .btn-capa {
-    padding: 4px 10px; font-size: 11px; font-weight: 600;
-    letter-spacing: 0.03em;
+    padding: 5px 11px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.02em;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #6B7280; white-space: nowrap;
+    min-height: 30px;
   }
   .btn-capa.active-teorica    { background: #1E40AF; border-color: #1E40AF; color: #fff; }
   .btn-capa.active-analitica  { background: #166534; border-color: #166534; color: #fff; }
   .btn-capa.active-evaluativa { background: #6B21A8; border-color: #6B21A8; color: #fff; }
 
-  /* Divider between groups */
-  .ctrl-sep { width: 1px; height: 20px; background: #E5E7EB; margin: 0 2px; flex-shrink: 0; }
-
   /* Dropdowns */
   select {
-    padding: 4px 6px; font-size: 12px;
+    padding: 0 6px; font-size: 12px;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #374151;
     font-family: inherit; cursor: pointer;
-    height: 28px;
+    height: 30px;
+    max-width: 150px;
   }
   select:focus { outline: none; border-color: #93C5FD; }
 
   /* Search */
-  .search-wrap { position: relative; display: flex; align-items: center; }
+  .search-wrap { position: relative; display: flex; align-items: center; flex: 1; min-width: 120px; max-width: 220px; }
   .search-wrap input[type=text] {
-    width: 200px; height: 28px;
+    width: 100%; height: 30px;
     padding: 0 26px 0 9px; font-size: 12px;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; outline: none; font-family: inherit;
@@ -92,25 +97,25 @@
     line-height: 1; padding: 0; cursor: pointer; display: none;
   }
   .btn-search {
-    height: 28px; padding: 0 12px; font-size: 12px; font-weight: 500;
+    height: 30px; padding: 0 12px; font-size: 12px; font-weight: 500;
     border: 1px solid #1E40AF; border-radius: 3px;
-    background: #1E40AF; color: #fff;
+    background: #1E40AF; color: #fff; white-space: nowrap;
   }
 
   /* Clear all */
   .btn-clear-all {
     background: none; border: 1px solid #E5E7EB; border-radius: 3px;
     font-size: 11px; color: #9CA3AF;
-    padding: 3px 8px; height: 28px;
-    display: none;
+    padding: 0 8px; height: 30px;
+    display: none; white-space: nowrap;
   }
   .btn-clear-all:hover { border-color: #DC2626; color: #DC2626; }
 
   /* Filter count + export row */
   .meta-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 0 0; font-size: 11px; color: #9CA3AF;
-    flex-wrap: wrap; gap: 8px;
+    padding: 7px 0 0; font-size: 11px; color: #9CA3AF;
+    flex-wrap: wrap; gap: 6px;
   }
   .btn-export {
     font-size: 11px; color: #6B7280; background: none;
@@ -122,7 +127,7 @@
   main { padding: 0 0 80px; }
   article {
     border-bottom: 1px solid #E5E7EB;
-    padding: 16px 0;
+    padding: 14px 0;
     cursor: pointer;
   }
   article:hover { background: #F9FAFB; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
@@ -130,11 +135,11 @@
   /* Single meta line */
   .card-meta {
     display: flex; flex-wrap: wrap; align-items: center;
-    gap: 0; margin-bottom: 6px; font-size: 11px; line-height: 1.8;
+    gap: 0; margin-bottom: 5px; font-size: 11px; line-height: 1.9;
   }
   .card-imp {
     display: inline-flex; align-items: center;
-    padding: 2px 8px; border-radius: 3px;
+    padding: 2px 7px; border-radius: 3px;
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.07em; text-transform: uppercase;
     line-height: 1.6; margin-right: 6px; flex-shrink: 0;
@@ -143,7 +148,7 @@
   .imp-MEDIA { background: #D97706; color: #fff; }
   .imp-BAJA  { background: #9CA3AF; color: #fff; }
 
-  .meta-sep { color: #D1D5DB; padding: 0 5px; user-select: none; }
+  .meta-sep { color: #D1D5DB; padding: 0 4px; user-select: none; }
 
   .meta-capa-teorica    { color: #1E40AF; font-weight: 600; }
   .meta-capa-analitica  { color: #166534; font-weight: 600; }
@@ -152,10 +157,11 @@
   .meta-evaluativa      { color: #6B21A8; font-style: italic; }
   .meta-action          { font-weight: 600; color: #D97706; }
   .meta-type            { color: #9CA3AF; }
+  .meta-tier            { color: #9CA3AF; font-weight: 600; }
 
   .card-title {
     font-family: Georgia, serif;
-    font-size: 18px; font-weight: 400; line-height: 1.35;
+    font-size: 17px; font-weight: 400; line-height: 1.35;
     margin: 0 0 4px; color: #111;
   }
   .card-byline {
@@ -167,7 +173,7 @@
 
   /* Expandable body */
   .card-body {
-    margin-top: 12px; padding-left: 12px;
+    margin-top: 10px; padding-left: 12px;
     border-left: 2px solid #E5E7EB;
     display: none;
   }
@@ -178,13 +184,14 @@
 
   /* ── Pagination ── */
   .pagination {
-    display: flex; gap: 6px; justify-content: center;
-    padding: 28px 0 0; align-items: center; flex-wrap: wrap;
+    display: flex; gap: 5px; justify-content: center;
+    padding: 24px 0 0; align-items: center; flex-wrap: wrap;
   }
   .btn-page {
-    padding: 5px 10px; font-size: 12px;
+    padding: 6px 10px; font-size: 12px;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #374151;
+    min-height: 32px;
   }
   .btn-page:hover:not(:disabled) { border-color: #93C5FD; }
   .btn-page.current { background: #1E40AF; border-color: #1E40AF; color: #fff; font-weight: 600; cursor: default; }
@@ -197,6 +204,33 @@
     margin-top: 24px; padding: 14px 16px;
     background: #FEF2F2; border: 1px solid #FECACA;
     border-radius: 6px; font-size: 13px; color: #991B1B; line-height: 1.6;
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .container { padding: 0 12px; }
+    h1 { font-size: 20px; }
+    .header-sub { font-size: 11px; }
+    .last-fetch { display: none; }
+
+    .controls-row1, .controls-row2 { gap: 4px; }
+
+    /* On mobile, hide the vertical separators */
+    .ctrl-sep { display: none; }
+
+    /* Dropdowns stretch to fill available width */
+    select { max-width: none; flex: 1 1 calc(50% - 4px); min-width: 0; }
+
+    /* Search fills remaining width */
+    .search-wrap { max-width: none; flex: 1 1 160px; }
+
+    .card-title { font-size: 16px; }
+    .card-body p { font-size: 13px; }
+
+    /* Pagination: prev/next only on very small screens */
+    .btn-page:not(.current):not([onclick*="goPage(1)"]):not([onclick*="Prev"]):not([onclick*="Next"]) {
+      display: none;
+    }
   }
 </style>
 </head>
@@ -215,30 +249,26 @@
     <div class="header-stats" id="headerStats"><span>Loading…</span></div>
   </header>
 
-  <!-- Single controls row -->
-  <div class="controls">
-    <!-- Importance -->
+  <!-- Row 1: toggles -->
+  <div class="controls-row1">
     <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">Alta</button>
     <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">Media</button>
     <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">Baja</button>
-
     <div class="ctrl-sep"></div>
-
-    <!-- Capa -->
     <button class="btn-capa" id="btn-teorica"    onclick="toggleCapa('teorica')">Teórica</button>
     <button class="btn-capa" id="btn-analitica"  onclick="toggleCapa('analitica')">Analítica</button>
     <button class="btn-capa" id="btn-evaluativa" onclick="toggleCapa('evaluativa')">Evaluativa</button>
+  </div>
 
-    <div class="ctrl-sep"></div>
-
-    <!-- Capa detail -->
+  <!-- Row 2: dropdowns + search -->
+  <div class="controls-row2">
     <select id="selCapaDetail" onchange="applyDropdown()">
       <option value="">Subcapa</option>
       <optgroup label="Teórica">
         <option value="gobernanza de ia comparada">Gobernanza comparada</option>
         <option value="metodología de derecho comparado">Derecho comparado</option>
         <option value="derecho procesal y prueba electrónica">Prueba electrónica</option>
-        <option value="contestabilidad algorítmica">Contestabilidad</option>
+        <option value="contestabilidad algorítmica">Contestabilidad algorítmica</option>
       </optgroup>
       <optgroup label="Analítica">
         <option value="gestión de riesgos">Art. 9 · Riesgos</option>
@@ -250,23 +280,19 @@
         <option value="robustez">Art. 15 · Robustez</option>
       </optgroup>
       <optgroup label="Evaluativa">
-        <option value="contestabilidad">Evaluativa · Contestabilidad</option>
-        <option value="accountability">Evaluativa · Accountability</option>
-        <option value="equidad">Evaluativa · Equidad</option>
-        <option value="explicabilidad">Evaluativa · Explicabilidad</option>
+        <option value="contestabilidad">Eval. · Contestabilidad</option>
+        <option value="accountability">Eval. · Accountability</option>
+        <option value="equidad">Eval. · Equidad</option>
+        <option value="explicabilidad">Eval. · Explicabilidad</option>
       </optgroup>
     </select>
-
-    <!-- Evaluativa criteria -->
     <select id="selEvaluativa" onchange="applyDropdown()">
-      <option value="">Criterio eval.</option>
+      <option value="">Criterio</option>
       <option value="contestabilidad">Contestabilidad</option>
       <option value="accountability">Accountability</option>
-      <option value="equidad">Equidad / No discriminación</option>
+      <option value="equidad">Equidad</option>
       <option value="explicabilidad">Explicabilidad</option>
     </select>
-
-    <!-- Content type -->
     <select id="selType" onchange="applyDropdown()">
       <option value="">Tipo</option>
       <option value="article">Article</option>
@@ -276,8 +302,6 @@
       <option value="thesis">Thesis</option>
       <option value="other">Other</option>
     </select>
-
-    <!-- Sort -->
     <select id="selSort" onchange="applySort()">
       <option value="found-desc">Newest</option>
       <option value="found-asc">Oldest</option>
@@ -285,10 +309,6 @@
       <option value="date-asc">Pub. ↑</option>
       <option value="importance">Importance</option>
     </select>
-
-    <div class="ctrl-sep"></div>
-
-    <!-- Search -->
     <div class="search-wrap">
       <input type="text" id="searchInput" placeholder="Search…"
              onkeydown="if(event.key==='Enter')submitSearch()"
@@ -296,7 +316,6 @@
       <button class="btn-clear-x" id="btnClearX" onclick="clearSearch()" title="Clear">✕</button>
     </div>
     <button class="btn-search" onclick="submitSearch()">Go</button>
-
     <button class="btn-clear-all" id="btnClearAll" onclick="clearAllFilters()">✕ Clear</button>
   </div>
 
@@ -518,6 +537,10 @@ function renderCard(item, id) {
 
   // Content type
   if (item.content_type) metaParts.push(`<span class="meta-type">${item.content_type}</span>`);
+
+  // Tier
+  const tier = String(item.tier || "").trim();
+  if (tier) metaParts.push(`<span class="meta-tier">T${tier}</span>`);
 
   const metaLine = metaParts.map((p, i) =>
     i === 0 ? p : `<span class="meta-sep">·</span>${p}`
