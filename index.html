@@ -33,55 +33,93 @@
   .btn-refresh:disabled { color: #9CA3AF; cursor: default; }
 
   /* ── Controls ── */
-  /* Row 1: toggles only */
-  .controls-row1 {
-    padding: 10px 0 0;
-    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+  .controls-section { padding-top: 10px; }
+
+  /* Row label */
+  .controls-row-label {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #9CA3AF;
+    margin-bottom: 4px;
+    user-select: none;
   }
-  /* Row 2: dropdowns + search */
-  .controls-row2 {
-    padding: 6px 0 0;
+
+  /* Row 1: importance toggles */
+  .controls-row1 {
     display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    margin-bottom: 6px;
+  }
+
+  /* Row 2: capa toggles */
+  .controls-row2 {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    margin-bottom: 6px;
+  }
+
+  /* Row 3: dropdowns + search */
+  .controls-row3 {
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    padding-bottom: 4px;
   }
 
   .ctrl-sep { width: 1px; height: 20px; background: #E5E7EB; margin: 0 1px; flex-shrink: 0; }
 
-  /* Importance toggles */
+  /* ── Importance toggles ── */
   .btn-imp {
     padding: 5px 11px; font-size: 11px; font-weight: 700;
     letter-spacing: 0.05em; text-transform: uppercase;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #6B7280; white-space: nowrap;
     min-height: 30px;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-imp .btn-count {
+    font-size: 9px; font-weight: 800;
+    background: rgba(0,0,0,0.12); border-radius: 2px;
+    padding: 1px 4px; line-height: 1.4;
   }
   .btn-imp.active-ALTA  { background: #DC2626; border-color: #DC2626; color: #fff; }
   .btn-imp.active-MEDIA { background: #D97706; border-color: #D97706; color: #fff; }
   .btn-imp.active-BAJA  { background: #9CA3AF; border-color: #9CA3AF; color: #fff; }
+  .btn-imp.active-ALTA  .btn-count { background: rgba(255,255,255,0.25); }
+  .btn-imp.active-MEDIA .btn-count { background: rgba(255,255,255,0.25); }
+  .btn-imp.active-BAJA  .btn-count { background: rgba(255,255,255,0.25); }
 
-  /* Capa toggles */
+  /* ── Capa toggles ── */
   .btn-capa {
     padding: 5px 11px; font-size: 11px; font-weight: 600;
     letter-spacing: 0.02em;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #6B7280; white-space: nowrap;
     min-height: 30px;
+    display: inline-flex; align-items: center; gap: 5px;
+  }
+  .btn-capa .btn-count {
+    font-size: 9px; font-weight: 800;
+    background: rgba(0,0,0,0.10); border-radius: 2px;
+    padding: 1px 4px; line-height: 1.4;
   }
   .btn-capa.active-teorica    { background: #1E40AF; border-color: #1E40AF; color: #fff; }
   .btn-capa.active-analitica  { background: #166534; border-color: #166534; color: #fff; }
   .btn-capa.active-evaluativa { background: #6B21A8; border-color: #6B21A8; color: #fff; }
+  .btn-capa.active-metodologica { background: #0E7490; border-color: #0E7490; color: #fff; }
+  .btn-capa.active-teorica     .btn-count { background: rgba(255,255,255,0.25); }
+  .btn-capa.active-analitica   .btn-count { background: rgba(255,255,255,0.25); }
+  .btn-capa.active-evaluativa  .btn-count { background: rgba(255,255,255,0.25); }
+  .btn-capa.active-metodologica .btn-count { background: rgba(255,255,255,0.25); }
 
-  /* Dropdowns */
+  /* ── Dropdowns ── */
   select {
     padding: 0 6px; font-size: 12px;
     border: 1px solid #E5E7EB; border-radius: 3px;
     background: #fff; color: #374151;
     font-family: inherit; cursor: pointer;
     height: 30px;
-    max-width: 150px;
+    max-width: 160px;
   }
   select:focus { outline: none; border-color: #93C5FD; }
+  select.filter-active { border-color: #6B7280; color: #111; font-weight: 600; }
 
-  /* Search */
+  /* ── Search ── */
   .search-wrap { position: relative; display: flex; align-items: center; flex: 1; min-width: 120px; max-width: 220px; }
   .search-wrap input[type=text] {
     width: 100%; height: 30px;
@@ -102,7 +140,7 @@
     background: #1E40AF; color: #fff; white-space: nowrap;
   }
 
-  /* Clear all */
+  /* ── Clear all ── */
   .btn-clear-all {
     background: none; border: 1px solid #E5E7EB; border-radius: 3px;
     font-size: 11px; color: #9CA3AF;
@@ -111,7 +149,7 @@
   }
   .btn-clear-all:hover { border-color: #DC2626; color: #DC2626; }
 
-  /* Filter count + export row */
+  /* ── Filter count + export row ── */
   .meta-row {
     display: flex; align-items: center; justify-content: space-between;
     padding: 7px 0 0; font-size: 11px; color: #9CA3AF;
@@ -132,7 +170,6 @@
   }
   article:hover { background: #F9FAFB; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
 
-  /* Single meta line */
   .card-meta {
     display: flex; flex-wrap: wrap; align-items: center;
     gap: 0; margin-bottom: 5px; font-size: 11px; line-height: 1.9;
@@ -150,14 +187,15 @@
 
   .meta-sep { color: #D1D5DB; padding: 0 4px; user-select: none; }
 
-  .meta-capa-teorica    { color: #1E40AF; font-weight: 600; }
-  .meta-capa-analitica  { color: #166534; font-weight: 600; }
-  .meta-capa-evaluativa { color: #6B21A8; font-weight: 600; }
-  .meta-capa-detail     { color: #6B7280; }
-  .meta-evaluativa      { color: #6B21A8; font-style: italic; }
-  .meta-action          { font-weight: 600; color: #D97706; }
-  .meta-type            { color: #9CA3AF; }
-  .meta-tier            { color: #9CA3AF; font-weight: 600; }
+  .meta-capa-teorica      { color: #1E40AF; font-weight: 600; }
+  .meta-capa-analitica    { color: #166534; font-weight: 600; }
+  .meta-capa-evaluativa   { color: #6B21A8; font-weight: 600; }
+  .meta-capa-metodologica { color: #0E7490; font-weight: 600; }
+  .meta-capa-detail       { color: #6B7280; }
+  .meta-evaluativa        { color: #6B21A8; font-style: italic; }
+  .meta-action            { font-weight: 600; color: #D97706; }
+  .meta-type              { color: #9CA3AF; }
+  .meta-tier              { color: #9CA3AF; font-weight: 600; }
 
   .card-title {
     font-family: Georgia, serif;
@@ -171,7 +209,6 @@
   .card-byline .scholar { color: #6B7280; font-weight: 500; }
   .card-byline .lang { text-transform: uppercase; font-weight: 600; font-size: 10px; }
 
-  /* Expandable body */
   .card-body {
     margin-top: 10px; padding-left: 12px;
     border-left: 2px solid #E5E7EB;
@@ -207,40 +244,43 @@
   }
 
   /* ── Mobile ── */
-  @media (max-width: 600px) {
-    .container { padding: 0 12px; }
-    h1 { font-size: 20px; }
-    .header-sub { font-size: 11px; }
+  @media (max-width: 480px) {
+    h1 { font-size: 18px; }
     .last-fetch { display: none; }
+    .controls-row-label { display: none; }
 
-    .controls-row1 { gap: 3px; flex-wrap: nowrap; }
-    .controls-row2 { gap: 4px; }
+    .controls-row1,
+    .controls-row2 { gap: 4px; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
 
-    /* Aggressively shrink toggles */
     .btn-imp, .btn-capa {
-      padding: 3px 5px;
-      font-size: 9px;
-      letter-spacing: 0;
-      min-height: 26px;
-      border-radius: 2px;
+      padding: 4px 8px; font-size: 10px;
+      min-height: 28px; flex-shrink: 0;
     }
+    .btn-imp .btn-count,
+    .btn-capa .btn-count { display: none; }
 
-    /* On mobile, hide the vertical separators */
     .ctrl-sep { display: none; }
 
-    /* Dropdowns stretch to fill available width */
-    select { max-width: none; flex: 1 1 calc(50% - 4px); min-width: 0; }
+    .controls-row3 { gap: 4px; }
+    select { max-width: none; flex: 1 1 auto; min-width: 0; font-size: 11px; }
+    .search-wrap { flex: 1 1 100%; max-width: none; }
+    .btn-search { flex-shrink: 0; }
 
-    /* Search fills remaining width */
-    .search-wrap { max-width: none; flex: 1 1 160px; }
-
-    .card-title { font-size: 16px; }
+    .card-title { font-size: 15px; }
     .card-body p { font-size: 13px; }
+  }
 
-    /* Pagination: prev/next only on very small screens */
-    .btn-page:not(.current):not([onclick*="goPage(1)"]):not([onclick*="Prev"]):not([onclick*="Next"]) {
-      display: none;
-    }
+  /* ── Tablet / laptop ── */
+  @media (min-width: 481px) and (max-width: 768px) {
+    .container { padding: 0 14px; }
+    .btn-imp, .btn-capa { padding: 5px 9px; font-size: 11px; }
+    select { max-width: 130px; }
+    .search-wrap { max-width: 180px; }
+  }
+
+  @media (min-width: 769px) {
+    .controls-row3 { flex-wrap: nowrap; }
+    .search-wrap { max-width: 200px; }
   }
 </style>
 </head>
@@ -259,74 +299,77 @@
     <div class="header-stats" id="headerStats"><span>Loading…</span></div>
   </header>
 
-  <!-- Row 1: toggles -->
-  <div class="controls-row1">
-    <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">Alta</button>
-    <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">Media</button>
-    <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">Baja</button>
-    <div class="ctrl-sep"></div>
-    <button class="btn-capa" id="btn-teorica"    onclick="toggleCapa('teorica')">Teórica</button>
-    <button class="btn-capa" id="btn-analitica"  onclick="toggleCapa('analitica')">Analítica</button>
-    <button class="btn-capa" id="btn-evaluativa" onclick="toggleCapa('evaluativa')">Evaluativa</button>
-  </div>
+  <div class="controls-section">
 
-  <!-- Row 2: dropdowns + search -->
-  <div class="controls-row2">
-    <select id="selCapaDetail" onchange="applyDropdown()">
-      <option value="">Subcapa</option>
-      <optgroup label="Teórica">
-        <option value="gobernanza de ia comparada">Gobernanza comparada</option>
-        <option value="metodología de derecho comparado">Derecho comparado</option>
-        <option value="derecho procesal y prueba electrónica">Prueba electrónica</option>
-        <option value="contestabilidad algorítmica">Contestabilidad algorítmica</option>
-      </optgroup>
-      <optgroup label="Analítica">
-        <option value="gestión de riesgos">Art. 9 · Riesgos</option>
-        <option value="gobernanza de datos">Art. 10 · Datos</option>
-        <option value="documentación técnica">Art. 11 · Documentación</option>
-        <option value="registro de actividades">Art. 12 · Registro</option>
-        <option value="transparencia">Art. 13 · Transparencia</option>
-        <option value="supervisión humana">Art. 14 · Supervisión</option>
-        <option value="robustez">Art. 15 · Robustez</option>
-      </optgroup>
-      <optgroup label="Evaluativa">
-        <option value="contestabilidad">Eval. · Contestabilidad</option>
-        <option value="accountability">Eval. · Accountability</option>
-        <option value="equidad">Eval. · Equidad</option>
-        <option value="explicabilidad">Eval. · Explicabilidad</option>
-      </optgroup>
-    </select>
-    <select id="selEvaluativa" onchange="applyDropdown()">
-      <option value="">Criterio</option>
-      <option value="contestabilidad">Contestabilidad</option>
-      <option value="accountability">Accountability</option>
-      <option value="equidad">Equidad</option>
-      <option value="explicabilidad">Explicabilidad</option>
-    </select>
-    <select id="selType" onchange="applyDropdown()">
-      <option value="">Tipo</option>
-      <option value="article">Article</option>
-      <option value="book">Book</option>
-      <option value="report">Report</option>
-      <option value="regulation">Regulation</option>
-      <option value="thesis">Thesis</option>
-      <option value="other">Other</option>
-    </select>
-    <select id="selSort" onchange="applySort()">
-      <option value="found-desc">Newest</option>
-      <option value="found-asc">Oldest</option>
-      <option value="date-desc">Pub. ↓</option>
-      <option value="date-asc">Pub. ↑</option>
-      <option value="importance">Importance</option>
-    </select>
-    <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="Search…"
-             onkeydown="if(event.key==='Enter')submitSearch()"
-             oninput="updateXBtn()" />
-      <button class="btn-clear-x" id="btnClearX" onclick="clearSearch()" title="Clear">✕</button>
+    <!-- Row 1: Importance -->
+    <div class="controls-row-label">Prioridad</div>
+    <div class="controls-row1">
+      <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">
+        Alta<span class="btn-count" id="cnt-ALTA">—</span>
+      </button>
+      <button class="btn-imp" id="btn-MEDIA" onclick="toggleImp('MEDIA')">
+        Media<span class="btn-count" id="cnt-MEDIA">—</span>
+      </button>
+      <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">
+        Baja<span class="btn-count" id="cnt-BAJA">—</span>
+      </button>
     </div>
-    <button class="btn-search" onclick="submitSearch()">Go</button>
-    <button class="btn-clear-all" id="btnClearAll" onclick="clearAllFilters()">✕ Clear</button>
+
+    <!-- Row 2: Capa -->
+    <div class="controls-row-label">Capa</div>
+    <div class="controls-row2">
+      <button class="btn-capa" id="btn-teorica"       onclick="toggleCapa('teorica')">
+        Teórica<span class="btn-count" id="cnt-teorica">—</span>
+      </button>
+      <button class="btn-capa" id="btn-analitica"     onclick="toggleCapa('analitica')">
+        Analítica<span class="btn-count" id="cnt-analitica">—</span>
+      </button>
+      <button class="btn-capa" id="btn-evaluativa"    onclick="toggleCapa('evaluativa')">
+        Evaluativa<span class="btn-count" id="cnt-evaluativa">—</span>
+      </button>
+      <button class="btn-capa" id="btn-metodologica"  onclick="toggleCapa('metodologica')">
+        Metodológica<span class="btn-count" id="cnt-metodologica">—</span>
+      </button>
+    </div>
+
+    <!-- Row 3: Dropdowns + search -->
+    <div class="controls-row3">
+      <select id="selCapaDetail" onchange="applyDropdown()">
+        <!-- Options filled dynamically based on active capa -->
+      </select>
+      <select id="selEvaluativa" onchange="applyDropdown()">
+        <option value="">Criterio</option>
+        <option value="contestabilidad">Contestabilidad</option>
+        <option value="accountability">Accountability</option>
+        <option value="equidad">Equidad</option>
+        <option value="explicabilidad">Explicabilidad</option>
+      </select>
+      <select id="selType" onchange="applyDropdown()">
+        <option value="">Tipo</option>
+        <option value="article">Article</option>
+        <option value="book">Book</option>
+        <option value="report">Report</option>
+        <option value="regulation">Regulation</option>
+        <option value="thesis">Thesis</option>
+        <option value="other">Other</option>
+      </select>
+      <select id="selSort" onchange="applySort()">
+        <option value="found-desc">Newest</option>
+        <option value="found-asc">Oldest</option>
+        <option value="date-desc">Pub. ↓</option>
+        <option value="date-asc">Pub. ↑</option>
+        <option value="importance">Importance</option>
+      </select>
+      <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="Search…"
+               onkeydown="if(event.key==='Enter')submitSearch()"
+               oninput="updateXBtn()" />
+        <button class="btn-clear-x" id="btnClearX" onclick="clearSearch()" title="Clear">✕</button>
+      </div>
+      <button class="btn-search" onclick="submitSearch()">Go</button>
+      <button class="btn-clear-all" id="btnClearAll" onclick="clearAllFilters()">✕ Clear</button>
+    </div>
+
   </div>
 
   <div class="meta-row">
@@ -343,14 +386,120 @@
 const API_URL    = "https://script.google.com/macros/s/AKfycbzk2vhu-qcKFBPqEImKGEZKSitpVZv1IQQEv5ZzG7pNfo-iPUWfvSoLWWnkoc8d8PQQ/exec";
 const PAGE_LIMIT = 50;
 
+// Subcapa options per capa
+const SUBCAPA_OPTIONS = {
+  all: [
+    { label: "— Subcapa —", value: "" },
+    { group: "Teórica", options: [
+      { label: "Gobernanza comparada",   value: "gobernanza de ia comparada" },
+      { label: "Derecho comparado",      value: "metodología de derecho comparado" },
+      { label: "Prueba electrónica",     value: "derecho procesal y prueba electrónica" },
+      { label: "Contestabilidad alg.",   value: "contestabilidad algorítmica" },
+    ]},
+    { group: "Analítica", options: [
+      { label: "Art. 9 · Riesgos",       value: "gestión de riesgos" },
+      { label: "Art. 10 · Datos",        value: "gobernanza de datos" },
+      { label: "Art. 11 · Documentación",value: "documentación técnica" },
+      { label: "Art. 12 · Registro",     value: "registro de actividades" },
+      { label: "Art. 13 · Transparencia",value: "transparencia" },
+      { label: "Art. 14 · Supervisión",  value: "supervisión humana" },
+      { label: "Art. 15 · Robustez",     value: "robustez" },
+    ]},
+    { group: "Evaluativa", options: [
+      { label: "Eval. · Contestabilidad",value: "contestabilidad" },
+      { label: "Eval. · Accountability", value: "accountability" },
+      { label: "Eval. · Equidad",        value: "equidad" },
+      { label: "Eval. · Explicabilidad", value: "explicabilidad" },
+    ]},
+    { group: "Metodológica", options: [
+      { label: "Equivalencia funcional", value: "equivalencia funcional" },
+      { label: "Estudio de caso",        value: "estudio de caso instrumental" },
+      { label: "Análisis documental",    value: "análisis documental" },
+      { label: "Fuentes públicas",       value: "fuentes públicas" },
+    ]},
+  ],
+  teorica: [
+    { label: "— Subcapa —", value: "" },
+    { label: "Gobernanza comparada",   value: "gobernanza de ia comparada" },
+    { label: "Derecho comparado",      value: "metodología de derecho comparado" },
+    { label: "Prueba electrónica",     value: "derecho procesal y prueba electrónica" },
+    { label: "Contestabilidad alg.",   value: "contestabilidad algorítmica" },
+  ],
+  analitica: [
+    { label: "— Subcapa —", value: "" },
+    { label: "Art. 9 · Riesgos",        value: "gestión de riesgos" },
+    { label: "Art. 10 · Datos",         value: "gobernanza de datos" },
+    { label: "Art. 11 · Documentación", value: "documentación técnica" },
+    { label: "Art. 12 · Registro",      value: "registro de actividades" },
+    { label: "Art. 13 · Transparencia", value: "transparencia" },
+    { label: "Art. 14 · Supervisión",   value: "supervisión humana" },
+    { label: "Art. 15 · Robustez",      value: "robustez" },
+  ],
+  evaluativa: [
+    { label: "— Subcapa —", value: "" },
+    { label: "Eval. · Contestabilidad", value: "contestabilidad" },
+    { label: "Eval. · Accountability",  value: "accountability" },
+    { label: "Eval. · Equidad",         value: "equidad" },
+    { label: "Eval. · Explicabilidad",  value: "explicabilidad" },
+  ],
+  metodologica: [
+    { label: "— Subcapa —", value: "" },
+    { label: "Equivalencia funcional",  value: "equivalencia funcional" },
+    { label: "Estudio de caso",         value: "estudio de caso instrumental" },
+    { label: "Análisis documental",     value: "análisis documental" },
+    { label: "Fuentes públicas",        value: "fuentes públicas" },
+  ],
+};
+
 let state = {
-  page: 1, search: "", importance: "", capa: "", sort: "found-desc",
+  page: 1, search: "", importance: "", capa: "", capaKey: "",
+  sort: "found-desc",
   rows: [], total: 0, total_pages: 1, has_next: false, has_prev: false,
   loading: false, lastFetch: null,
 };
 let expandedIds = new Set();
 
-// ── URL builder ──────────────────────────────────────────────────────────────
+// ── Subcapa dropdown sync ─────────────────────────────────────────────────────
+function buildSubcapaDropdown(capaKey) {
+  const sel = document.getElementById("selCapaDetail");
+  const currentVal = sel.value;
+  sel.innerHTML = "";
+
+  const key = capaKey || "all";
+  const items = SUBCAPA_OPTIONS[key] || SUBCAPA_OPTIONS.all;
+
+  for (const item of items) {
+    if (item.group) {
+      // grouped (all view)
+      const grp = document.createElement("optgroup");
+      grp.label = item.group;
+      for (const opt of item.options) {
+        const o = document.createElement("option");
+        o.value = opt.value; o.textContent = opt.label;
+        if (o.value === currentVal) o.selected = true;
+        grp.appendChild(o);
+      }
+      sel.appendChild(grp);
+    } else {
+      // flat (capa-specific view)
+      const o = document.createElement("option");
+      o.value = item.value; o.textContent = item.label;
+      if (o.value === currentVal) o.selected = true;
+      sel.appendChild(o);
+    }
+  }
+
+  // If old value no longer exists in new options, reset
+  if (sel.value !== currentVal) sel.value = "";
+  updateDropdownStyle(sel);
+}
+
+function updateDropdownStyle(sel) {
+  if (sel.value) sel.classList.add("filter-active");
+  else sel.classList.remove("filter-active");
+}
+
+// ── URL builder ───────────────────────────────────────────────────────────────
 function buildUrl() {
   let url = API_URL + "?action=getPage"
     + "&page=" + state.page
@@ -358,8 +507,6 @@ function buildUrl() {
     + "&sort=" + encodeURIComponent(state.sort);
   if (state.importance) url += "&importance=" + encodeURIComponent(state.importance);
   if (state.capa)       url += "&capa="       + encodeURIComponent(state.capa);
-  // capa_detail, evaluativa_criteria, content_type go into search for now
-  // (backend supports them in haystack fulltext search)
   const extra = buildExtraSearch();
   const combined = [state.search, extra].filter(Boolean).join(" ");
   if (combined) url += "&search=" + encodeURIComponent(combined);
@@ -377,7 +524,7 @@ function buildExtraSearch() {
   return parts.join(" ");
 }
 
-// ── JSONP ────────────────────────────────────────────────────────────────────
+// ── JSONP ──────────────────────────────────────────────────────────────────────
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const cbName = "_cb_" + Math.random().toString(36).slice(2);
@@ -390,7 +537,31 @@ function jsonp(url) {
   });
 }
 
-// ── Fetch ────────────────────────────────────────────────────────────────────
+// ── Button counts — fed from stats returned by getPage ───────────────────────
+// stats.alta / stats.media / stats.baja → importance buttons
+// stats.capa.{teorica,analitica,evaluativa,metodologica} → capa buttons
+// Both sets always reflect the full corpus (unfiltered), so numbers stay
+// stable regardless of which filters are active.
+
+function updateAllButtonCounts(stats) {
+  if (!stats) return;
+
+  // Importance
+  ["ALTA","MEDIA","BAJA"].forEach(k => {
+    const el = document.getElementById("cnt-" + k);
+    if (el) el.textContent = stats[k.toLowerCase()] !== undefined ? stats[k.toLowerCase()] : "—";
+  });
+
+  // Capa
+  if (stats.capa) {
+    ["teorica","analitica","evaluativa","metodologica"].forEach(k => {
+      const el = document.getElementById("cnt-" + k);
+      if (el) el.textContent = stats.capa[k] !== undefined ? stats.capa[k] : "—";
+    });
+  }
+}
+
+// ── Fetch ─────────────────────────────────────────────────────────────────────
 async function fetchData() {
   if (state.loading) return;
   state.loading = true;
@@ -408,6 +579,7 @@ async function fetchData() {
     state.lastFetch   = new Date();
     state.rows        = data.rows || [];
     renderHeader(data.stats || null);
+    updateAllButtonCounts(data.stats || null);
     renderFlat();
     renderPagination();
   } catch(e) {
@@ -422,7 +594,7 @@ async function fetchData() {
 
 function refresh() { fetchData(); }
 
-// ── Filters ──────────────────────────────────────────────────────────────────
+// ── Filters ───────────────────────────────────────────────────────────────────
 function toggleImp(imp) {
   ["ALTA","MEDIA","BAJA"].forEach(i => {
     const btn = document.getElementById("btn-" + i);
@@ -436,19 +608,39 @@ function toggleImp(imp) {
 }
 
 function toggleCapa(capa) {
-  ["teorica","analitica","evaluativa"].forEach(c => {
+  const capaKeys = ["teorica","analitica","evaluativa","metodologica"];
+  let newCapaKey = "";
+  capaKeys.forEach(c => {
     const btn = document.getElementById("btn-" + c);
     const wasActive = btn.classList.contains("active-" + c);
-    btn.className = "btn-capa" + (c === capa && !wasActive ? " active-" + c : "");
+    const isThis = c === capa;
+    btn.className = "btn-capa" + (isThis && !wasActive ? " active-" + c : "");
+    if (isThis && !wasActive) newCapaKey = c;
   });
-  state.capa = document.getElementById("btn-teorica").classList.contains("active-teorica")       ? "teórica"
-             : document.getElementById("btn-analitica").classList.contains("active-analitica")   ? "analítica"
-             : document.getElementById("btn-evaluativa").classList.contains("active-evaluativa") ? "evaluativa" : "";
+
+  const capaValueMap = {
+    teorica: "teórica", analitica: "analítica",
+    evaluativa: "evaluativa", metodologica: "metodológica"
+  };
+  state.capaKey = newCapaKey;
+  state.capa    = newCapaKey ? (capaValueMap[newCapaKey] || newCapaKey) : "";
+
+  // Re-build subcapa dropdown, preserving value if still valid
+  buildSubcapaDropdown(newCapaKey);
   state.page = 1; updateClearBtn(); fetchData();
 }
 
-function applyDropdown() { state.page = 1; updateClearBtn(); fetchData(); }
-function applySort()     { state.sort = document.getElementById("selSort").value; state.page = 1; fetchData(); }
+function applyDropdown() {
+  updateDropdownStyle(document.getElementById("selCapaDetail"));
+  updateDropdownStyle(document.getElementById("selEvaluativa"));
+  updateDropdownStyle(document.getElementById("selType"));
+  state.page = 1; updateClearBtn(); fetchData();
+}
+
+function applySort() {
+  state.sort = document.getElementById("selSort").value;
+  state.page = 1; fetchData();
+}
 
 function submitSearch() {
   state.search = document.getElementById("searchInput").value.trim();
@@ -463,13 +655,15 @@ function clearSearch() {
 function clearAllFilters() {
   document.getElementById("searchInput").value = "";
   document.getElementById("selSort").value = "found-desc";
-  document.getElementById("selCapaDetail").value = "";
   document.getElementById("selEvaluativa").value = "";
   document.getElementById("selType").value = "";
   ["ALTA","MEDIA","BAJA"].forEach(i => document.getElementById("btn-" + i).className = "btn-imp");
-  ["teorica","analitica","evaluativa"].forEach(c => document.getElementById("btn-" + c).className = "btn-capa");
-  state.search = ""; state.importance = ""; state.capa = "";
+  ["teorica","analitica","evaluativa","metodologica"].forEach(c =>
+    document.getElementById("btn-" + c).className = "btn-capa"
+  );
+  state.search = ""; state.importance = ""; state.capa = ""; state.capaKey = "";
   state.sort = "found-desc"; state.page = 1;
+  buildSubcapaDropdown("");
   updateXBtn(); updateClearBtn(); fetchData();
 }
 
@@ -488,7 +682,7 @@ function updateClearBtn() {
 
 function goPage(p) { state.page = p; fetchData(); }
 
-// ── Render ───────────────────────────────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────────────────────
 function renderHeader(stats) {
   const el = document.getElementById("headerStats");
   const hasFilter = state.importance || state.capa || state.search
@@ -515,40 +709,28 @@ function renderFlat() {
   renderMain(state.rows.map((item, i) => renderCard(item, "c-" + state.page + "-" + i)).join(""));
 }
 
-// ── Card ─────────────────────────────────────────────────────────────────────
+// ── Card ──────────────────────────────────────────────────────────────────────
 function renderCard(item, id) {
   const imp    = item.importance || "BAJA";
   const isOpen = expandedIds.has(id);
 
-  // ── Build single meta line ──────────────────────────────────────────────
   const metaParts = [];
-
-  // Capa label
   const capaRaw = (item.capa || "").toLowerCase();
-  const capaClass = capaRaw.includes("teór") || capaRaw.includes("teor") ? "meta-capa-teorica"
+  const capaClass = capaRaw.includes("teór") || capaRaw.includes("teor")   ? "meta-capa-teorica"
                   : capaRaw.includes("analí") || capaRaw.includes("anali") ? "meta-capa-analitica"
-                  : capaRaw.includes("eval") ? "meta-capa-evaluativa" : "";
-  const capaLabel = capaRaw.includes("teór") || capaRaw.includes("teor") ? "Teórica"
+                  : capaRaw.includes("eval")                                ? "meta-capa-evaluativa"
+                  : capaRaw.includes("metod")                               ? "meta-capa-metodologica" : "";
+  const capaLabel = capaRaw.includes("teór") || capaRaw.includes("teor")   ? "Teórica"
                   : capaRaw.includes("analí") || capaRaw.includes("anali") ? "Analítica"
-                  : capaRaw.includes("eval") ? "Evaluativa"
+                  : capaRaw.includes("eval")                                ? "Evaluativa"
+                  : capaRaw.includes("metod")                               ? "Metodológica"
                   : item.capa || "";
   if (capaLabel) metaParts.push(`<span class="${capaClass}">${capaLabel}</span>`);
-
-  // Capa detail
-  if (item.capa_detail) metaParts.push(`<span class="meta-capa-detail">${item.capa_detail}</span>`);
-
-  // Evaluativa criteria
+  if (item.capa_detail)         metaParts.push(`<span class="meta-capa-detail">${item.capa_detail}</span>`);
   if (item.evaluativa_criteria) metaParts.push(`<span class="meta-evaluativa">${item.evaluativa_criteria}</span>`);
-
-  // Action tag
   const ACT = { REFERENCE: "Reference", CONTEXT: "Context", "FOLLOW-UP": "Follow-up", URGENT: "Urgent" };
-  const act = item.action_tag || "";
-  if (act) metaParts.push(`<span class="meta-action">${ACT[act] || act}</span>`);
-
-  // Content type
+  if (item.action_tag)  metaParts.push(`<span class="meta-action">${ACT[item.action_tag] || item.action_tag}</span>`);
   if (item.content_type) metaParts.push(`<span class="meta-type">${item.content_type}</span>`);
-
-  // Tier
   const tier = String(item.tier || "").trim();
   if (tier) metaParts.push(`<span class="meta-tier">T${tier}</span>`);
 
@@ -556,7 +738,6 @@ function renderCard(item, id) {
     i === 0 ? p : `<span class="meta-sep">·</span>${p}`
   ).join("");
 
-  // ── Byline ──────────────────────────────────────────────────────────────
   const bylineParts = [
     item.source || "",
     item.date_published ? formatDate(item.date_published) : "",
@@ -565,7 +746,6 @@ function renderCard(item, id) {
   ].filter(Boolean);
   const byline = bylineParts.join('<span class="meta-sep">·</span>');
 
-  // ── Body ─────────────────────────────────────────────────────────────────
   const paras = (item.thesis_relevance || "").split(/\n\n+/).filter(p => p.trim());
   const bodyHtml = paras.map((p, i) =>
     `<p${i === paras.length - 1 ? ' class="thesis"' : ""}>${p}</p>`
@@ -597,7 +777,7 @@ function toggleCard(id) {
 
 function renderMain(html) { document.getElementById("main").innerHTML = html; }
 
-// ── Pagination ───────────────────────────────────────────────────────────────
+// ── Pagination ────────────────────────────────────────────────────────────────
 function renderPagination() {
   const el = document.getElementById("pagination");
   if (state.total_pages <= 1) { el.innerHTML = ""; return; }
@@ -653,6 +833,8 @@ function exportMarkdown() {
     });
 }
 
+// ── Init ──────────────────────────────────────────────────────────────────────
+buildSubcapaDropdown("");
 fetchData();
 </script>
 </body>
