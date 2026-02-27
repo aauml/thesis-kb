@@ -35,14 +35,6 @@
   /* ── Controls ── */
   .controls-section { padding-top: 10px; }
 
-  /* Row label */
-  .controls-row-label {
-    font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: #9CA3AF;
-    margin-bottom: 4px;
-    user-select: none;
-  }
-
   /* Row 1: importance toggles */
   .controls-row1 {
     display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
@@ -73,16 +65,16 @@
     display: inline-flex; align-items: center; gap: 5px;
   }
   .btn-imp .btn-count {
-    font-size: 9px; font-weight: 800;
-    background: rgba(0,0,0,0.12); border-radius: 2px;
-    padding: 1px 4px; line-height: 1.4;
+    font-size: 9px; font-weight: 600;
+    color: #9CA3AF;
+    padding: 0; line-height: 1.4;
   }
   .btn-imp.active-ALTA  { background: #DC2626; border-color: #DC2626; color: #fff; }
   .btn-imp.active-MEDIA { background: #D97706; border-color: #D97706; color: #fff; }
   .btn-imp.active-BAJA  { background: #9CA3AF; border-color: #9CA3AF; color: #fff; }
-  .btn-imp.active-ALTA  .btn-count { background: rgba(255,255,255,0.25); }
-  .btn-imp.active-MEDIA .btn-count { background: rgba(255,255,255,0.25); }
-  .btn-imp.active-BAJA  .btn-count { background: rgba(255,255,255,0.25); }
+  .btn-imp.active-ALTA  .btn-count,
+  .btn-imp.active-MEDIA .btn-count,
+  .btn-imp.active-BAJA  .btn-count { color: rgba(255,255,255,0.75); }
 
   /* ── Capa toggles ── */
   .btn-capa {
@@ -93,19 +85,10 @@
     min-height: 30px;
     display: inline-flex; align-items: center; gap: 5px;
   }
-  .btn-capa .btn-count {
-    font-size: 9px; font-weight: 800;
-    background: rgba(0,0,0,0.10); border-radius: 2px;
-    padding: 1px 4px; line-height: 1.4;
-  }
   .btn-capa.active-teorica    { background: #1E40AF; border-color: #1E40AF; color: #fff; }
   .btn-capa.active-analitica  { background: #166534; border-color: #166534; color: #fff; }
   .btn-capa.active-evaluativa { background: #6B21A8; border-color: #6B21A8; color: #fff; }
   .btn-capa.active-metodologica { background: #0E7490; border-color: #0E7490; color: #fff; }
-  .btn-capa.active-teorica     .btn-count { background: rgba(255,255,255,0.25); }
-  .btn-capa.active-analitica   .btn-count { background: rgba(255,255,255,0.25); }
-  .btn-capa.active-evaluativa  .btn-count { background: rgba(255,255,255,0.25); }
-  .btn-capa.active-metodologica .btn-count { background: rgba(255,255,255,0.25); }
 
   /* ── Dropdowns ── */
   select {
@@ -302,7 +285,6 @@
   <div class="controls-section">
 
     <!-- Row 1: Importance -->
-    <div class="controls-row-label">Prioridad</div>
     <div class="controls-row1">
       <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">
         Alta<span class="btn-count" id="cnt-ALTA">—</span>
@@ -316,20 +298,11 @@
     </div>
 
     <!-- Row 2: Capa -->
-    <div class="controls-row-label">Capa</div>
     <div class="controls-row2">
-      <button class="btn-capa" id="btn-teorica"       onclick="toggleCapa('teorica')">
-        Teórica<span class="btn-count" id="cnt-teorica">—</span>
-      </button>
-      <button class="btn-capa" id="btn-analitica"     onclick="toggleCapa('analitica')">
-        Analítica<span class="btn-count" id="cnt-analitica">—</span>
-      </button>
-      <button class="btn-capa" id="btn-evaluativa"    onclick="toggleCapa('evaluativa')">
-        Evaluativa<span class="btn-count" id="cnt-evaluativa">—</span>
-      </button>
-      <button class="btn-capa" id="btn-metodologica"  onclick="toggleCapa('metodologica')">
-        Metodológica<span class="btn-count" id="cnt-metodologica">—</span>
-      </button>
+      <button class="btn-capa" id="btn-teorica"       onclick="toggleCapa('teorica')">Teórica</button>
+      <button class="btn-capa" id="btn-analitica"     onclick="toggleCapa('analitica')">Analítica</button>
+      <button class="btn-capa" id="btn-evaluativa"    onclick="toggleCapa('evaluativa')">Evaluativa</button>
+      <button class="btn-capa" id="btn-metodologica"  onclick="toggleCapa('metodologica')">Metodológica</button>
     </div>
 
     <!-- Row 3: Dropdowns + search -->
@@ -386,68 +359,68 @@
 const API_URL    = "https://script.google.com/macros/s/AKfycbzk2vhu-qcKFBPqEImKGEZKSitpVZv1IQQEv5ZzG7pNfo-iPUWfvSoLWWnkoc8d8PQQ/exec";
 const PAGE_LIMIT = 50;
 
-// Subcapa options per capa
+// Subcapa options per capa — values match exact strings in capa_detail field.
+// indexOf is used server-side, so "Gobernanza IA comparada" matches cells that
+// contain it alongside other values (e.g. "Gobernanza IA comparada, Art. 9 ↔ …").
 const SUBCAPA_OPTIONS = {
   all: [
     { label: "— Subcapa —", value: "" },
     { group: "Teórica", options: [
-      { label: "Gobernanza comparada",   value: "gobernanza de ia comparada" },
-      { label: "Derecho comparado",      value: "metodología de derecho comparado" },
-      { label: "Prueba electrónica",     value: "derecho procesal y prueba electrónica" },
-      { label: "Contestabilidad alg.",   value: "contestabilidad algorítmica" },
+      { label: "Gobernanza IA comparada",              value: "Gobernanza IA comparada" },
+      { label: "Metodología derecho comparado",        value: "Metodología derecho comparado" },
+      { label: "Contestabilidad algorítmica",          value: "Contestabilidad algorítmica" },
+      { label: "Derecho procesal y prueba electrónica",value: "Derecho procesal y prueba electrónica" },
     ]},
     { group: "Analítica", options: [
-      { label: "Art. 9 · Riesgos",       value: "gestión de riesgos" },
-      { label: "Art. 10 · Datos",        value: "gobernanza de datos" },
-      { label: "Art. 11 · Documentación",value: "documentación técnica" },
-      { label: "Art. 12 · Registro",     value: "registro de actividades" },
-      { label: "Art. 13 · Transparencia",value: "transparencia" },
-      { label: "Art. 14 · Supervisión",  value: "supervisión humana" },
-      { label: "Art. 15 · Robustez",     value: "robustez" },
+      { label: "Art. 9 · MAP/MEASURE",   value: "Art. 9 ↔ MAP/MEASURE" },
+      { label: "Art. 10 · MAP/GOVERN",   value: "Art. 10 ↔ MAP/GOVERN" },
+      { label: "Art. 11 · GOVERN",       value: "Art. 11 ↔ GOVERN" },
+      { label: "Art. 12 · MEASURE",      value: "Art. 12 ↔ MEASURE" },
+      { label: "Art. 13 · GOVERN/MAP",   value: "Art. 13 ↔ GOVERN/MAP" },
+      { label: "Art. 14 · GOVERN/MANAGE",value: "Art. 14 ↔ GOVERN/MANAGE" },
+      { label: "Art. 15 · MEASURE/MANAGE",value: "Art. 15 ↔ MEASURE/MANAGE" },
     ]},
     { group: "Evaluativa", options: [
-      { label: "Eval. · Contestabilidad",value: "contestabilidad" },
-      { label: "Eval. · Accountability", value: "accountability" },
-      { label: "Eval. · Equidad",        value: "equidad" },
-      { label: "Eval. · Explicabilidad", value: "explicabilidad" },
+      { label: "Contestabilidad algorítmica",          value: "Contestabilidad algorítmica" },
+      { label: "Derecho procesal y prueba electrónica",value: "Derecho procesal y prueba electrónica" },
     ]},
     { group: "Metodológica", options: [
-      { label: "Equivalencia funcional", value: "equivalencia funcional" },
-      { label: "Estudio de caso",        value: "estudio de caso instrumental" },
-      { label: "Análisis documental",    value: "análisis documental" },
-      { label: "Fuentes públicas",       value: "fuentes públicas" },
+      { label: "Gobernanza IA comparada",              value: "Gobernanza IA comparada" },
+      { label: "Metodología derecho comparado",        value: "Metodología derecho comparado" },
+      { label: "Contestabilidad algorítmica",          value: "Contestabilidad algorítmica" },
+      { label: "Derecho procesal y prueba electrónica",value: "Derecho procesal y prueba electrónica" },
+      { label: "Metodología de investigación",         value: "Metodología de investigación doctoral" },
     ]},
   ],
   teorica: [
     { label: "— Subcapa —", value: "" },
-    { label: "Gobernanza comparada",   value: "gobernanza de ia comparada" },
-    { label: "Derecho comparado",      value: "metodología de derecho comparado" },
-    { label: "Prueba electrónica",     value: "derecho procesal y prueba electrónica" },
-    { label: "Contestabilidad alg.",   value: "contestabilidad algorítmica" },
+    { label: "Gobernanza IA comparada",              value: "Gobernanza IA comparada" },
+    { label: "Metodología derecho comparado",        value: "Metodología derecho comparado" },
+    { label: "Contestabilidad algorítmica",          value: "Contestabilidad algorítmica" },
+    { label: "Derecho procesal y prueba electrónica",value: "Derecho procesal y prueba electrónica" },
   ],
   analitica: [
     { label: "— Subcapa —", value: "" },
-    { label: "Art. 9 · Riesgos",        value: "gestión de riesgos" },
-    { label: "Art. 10 · Datos",         value: "gobernanza de datos" },
-    { label: "Art. 11 · Documentación", value: "documentación técnica" },
-    { label: "Art. 12 · Registro",      value: "registro de actividades" },
-    { label: "Art. 13 · Transparencia", value: "transparencia" },
-    { label: "Art. 14 · Supervisión",   value: "supervisión humana" },
-    { label: "Art. 15 · Robustez",      value: "robustez" },
+    { label: "Art. 9 · MAP/MEASURE",    value: "Art. 9 ↔ MAP/MEASURE" },
+    { label: "Art. 10 · MAP/GOVERN",    value: "Art. 10 ↔ MAP/GOVERN" },
+    { label: "Art. 11 · GOVERN",        value: "Art. 11 ↔ GOVERN" },
+    { label: "Art. 12 · MEASURE",       value: "Art. 12 ↔ MEASURE" },
+    { label: "Art. 13 · GOVERN/MAP",    value: "Art. 13 ↔ GOVERN/MAP" },
+    { label: "Art. 14 · GOVERN/MANAGE", value: "Art. 14 ↔ GOVERN/MANAGE" },
+    { label: "Art. 15 · MEASURE/MANAGE",value: "Art. 15 ↔ MEASURE/MANAGE" },
   ],
   evaluativa: [
     { label: "— Subcapa —", value: "" },
-    { label: "Eval. · Contestabilidad", value: "contestabilidad" },
-    { label: "Eval. · Accountability",  value: "accountability" },
-    { label: "Eval. · Equidad",         value: "equidad" },
-    { label: "Eval. · Explicabilidad",  value: "explicabilidad" },
+    { label: "Contestabilidad algorítmica",          value: "Contestabilidad algorítmica" },
+    { label: "Derecho procesal y prueba electrónica",value: "Derecho procesal y prueba electrónica" },
   ],
   metodologica: [
     { label: "— Subcapa —", value: "" },
-    { label: "Equivalencia funcional",  value: "equivalencia funcional" },
-    { label: "Estudio de caso",         value: "estudio de caso instrumental" },
-    { label: "Análisis documental",     value: "análisis documental" },
-    { label: "Fuentes públicas",        value: "fuentes públicas" },
+    { label: "Gobernanza IA comparada",              value: "Gobernanza IA comparada" },
+    { label: "Metodología derecho comparado",        value: "Metodología derecho comparado" },
+    { label: "Contestabilidad algorítmica",          value: "Contestabilidad algorítmica" },
+    { label: "Derecho procesal y prueba electrónica",value: "Derecho procesal y prueba electrónica" },
+    { label: "Metodología de investigación",         value: "Metodología de investigación doctoral" },
   ],
 };
 
@@ -507,21 +480,23 @@ function buildUrl() {
     + "&sort=" + encodeURIComponent(state.sort);
   if (state.importance) url += "&importance=" + encodeURIComponent(state.importance);
   if (state.capa)       url += "&capa="       + encodeURIComponent(state.capa);
-  const extra = buildExtraSearch();
+  // capa_detail sent as its own parameter — indexOf match on capa_detail field
+  const cd = document.getElementById("selCapaDetail").value;
+  if (cd) url += "&capa_detail=" + encodeURIComponent(cd);
+  // evaluativa_criteria and content_type go into fulltext search
+  const ev = document.getElementById("selEvaluativa").value;
+  const tp = document.getElementById("selType").value;
+  const extra = [ev, tp].filter(Boolean).join(" ");
   const combined = [state.search, extra].filter(Boolean).join(" ");
   if (combined) url += "&search=" + encodeURIComponent(combined);
   return url;
 }
 
 function buildExtraSearch() {
-  const parts = [];
-  const cd = document.getElementById("selCapaDetail").value;
+  // kept for clearAllFilters reference — capa_detail now uses its own param
   const ev = document.getElementById("selEvaluativa").value;
   const tp = document.getElementById("selType").value;
-  if (cd) parts.push(cd);
-  if (ev) parts.push(ev);
-  if (tp) parts.push(tp);
-  return parts.join(" ");
+  return [ev, tp].filter(Boolean).join(" ");
 }
 
 // ── JSONP ──────────────────────────────────────────────────────────────────────
@@ -537,28 +512,15 @@ function jsonp(url) {
   });
 }
 
-// ── Button counts — fed from stats returned by getPage ───────────────────────
-// stats.alta / stats.media / stats.baja → importance buttons
-// stats.capa.{teorica,analitica,evaluativa,metodologica} → capa buttons
-// Both sets always reflect the full corpus (unfiltered), so numbers stay
-// stable regardless of which filters are active.
-
+// ── Button counts — importance only, fed from stats returned by getPage ──────
+// Capa counts are omitted: capa field is multi-value per row, so counts would
+// be inflated (a row tagged "Teórica, Analítica" is counted in both capas).
 function updateAllButtonCounts(stats) {
   if (!stats) return;
-
-  // Importance
   ["ALTA","MEDIA","BAJA"].forEach(k => {
     const el = document.getElementById("cnt-" + k);
     if (el) el.textContent = stats[k.toLowerCase()] !== undefined ? stats[k.toLowerCase()] : "—";
   });
-
-  // Capa
-  if (stats.capa) {
-    ["teorica","analitica","evaluativa","metodologica"].forEach(k => {
-      const el = document.getElementById("cnt-" + k);
-      if (el) el.textContent = stats.capa[k] !== undefined ? stats.capa[k] : "—";
-    });
-  }
 }
 
 // ── Fetch ─────────────────────────────────────────────────────────────────────
