@@ -593,7 +593,7 @@ async function fetchData() {
 function refresh() { fetchData(); }
 
 // ── Star toggle on individual card ────────────────────────────────────────────
-async function toggleStar(event, url, cardStarBtnId) {
+function toggleStar(event, url, cardStarBtnId) {
   event.stopPropagation(); // don't expand the card
 
   const btn = document.getElementById(cardStarBtnId);
@@ -607,20 +607,17 @@ async function toggleStar(event, url, cardStarBtnId) {
   btn.classList.toggle("starred", !isStarred);
   btn.title = !isStarred ? "Unstar" : "Star";
 
-  try {
-    const resp = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        action: "updateByUrl",
-        url: url,
-        fields: { starred: newVal }
-      })
-    });
-    const result = await resp.json();
+  // Use JSONP for the write — avoids CORS issues with Apps Script
+  const fieldsJson = JSON.stringify({ starred: newVal });
+  const writeUrl = API_URL
+    + "?action=updateByUrl"
+    + "&url=" + encodeURIComponent(url)
+    + "&fields=" + encodeURIComponent(fieldsJson);
+
+  jsonp(writeUrl).then(result => {
     if (result.error) throw new Error(result.error);
 
-    // Update the row in local state so re-renders stay consistent
+    // Update local state so re-renders stay consistent
     const row = state.rows.find(r => r.url === url);
     if (row) row.starred = newVal;
 
@@ -630,15 +627,15 @@ async function toggleStar(event, url, cardStarBtnId) {
       state.total = state.rows.length;
       renderFlat();
     }
-  } catch(e) {
+  }).catch(e => {
     // Revert optimistic update on failure
     btn.classList.toggle("starred", isStarred);
     btn.title = isStarred ? "Unstar" : "Star";
     console.error("Star save failed:", e.message);
     alert("Could not save star: " + e.message);
-  } finally {
+  }).finally(() => {
     btn.classList.remove("saving");
-  }
+  });
 }
 
 // ── Filters ───────────────────────────────────────────────────────────────────
