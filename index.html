@@ -76,6 +76,17 @@
   .btn-imp.active-MEDIA .btn-count,
   .btn-imp.active-BAJA  .btn-count { color: rgba(255,255,255,0.75); }
 
+  /* ── Star filter button ── */
+  .btn-star-filter {
+    padding: 5px 10px; font-size: 13px; font-weight: 700;
+    border: 1px solid #E5E7EB; border-radius: 3px;
+    background: #fff; color: #D1D5DB; white-space: nowrap;
+    min-height: 30px;
+    display: inline-flex; align-items: center;
+    line-height: 1;
+  }
+  .btn-star-filter.active { background: #FFFBEB; border-color: #F59E0B; color: #F59E0B; }
+
   /* ── Capa toggles ── */
   .btn-capa {
     padding: 5px 11px; font-size: 11px; font-weight: 600;
@@ -150,6 +161,7 @@
     border-bottom: 1px solid #E5E7EB;
     padding: 14px 0;
     cursor: pointer;
+    position: relative;
   }
   article:hover { background: #F9FAFB; margin: 0 -8px; padding-left: 8px; padding-right: 8px; }
 
@@ -179,6 +191,21 @@
   .meta-action            { font-weight: 600; color: #D97706; }
   .meta-type              { color: #9CA3AF; }
   .meta-tier              { color: #9CA3AF; font-weight: 600; }
+
+  /* ── Inline star button in meta line ── */
+  .btn-star {
+    background: none; border: none; padding: 0;
+    font-size: 13px; line-height: 1;
+    color: #D1D5DB;
+    cursor: pointer;
+    display: inline-flex; align-items: center;
+    margin-right: 6px; flex-shrink: 0;
+    transition: color 0.1s, transform 0.1s;
+    user-select: none;
+  }
+  .btn-star:hover { color: #F59E0B; transform: scale(1.2); }
+  .btn-star.starred { color: #F59E0B; }
+  .btn-star.saving  { opacity: 0.4; pointer-events: none; }
 
   .card-title {
     font-family: Georgia, serif;
@@ -284,7 +311,7 @@
 
   <div class="controls-section">
 
-    <!-- Row 1: Importance -->
+    <!-- Row 1: Importance + Star filter -->
     <div class="controls-row1">
       <button class="btn-imp" id="btn-ALTA"  onclick="toggleImp('ALTA')">
         Alta<span class="btn-count" id="cnt-ALTA">—</span>
@@ -295,6 +322,8 @@
       <button class="btn-imp" id="btn-BAJA"  onclick="toggleImp('BAJA')">
         Baja<span class="btn-count" id="cnt-BAJA">—</span>
       </button>
+      <div class="ctrl-sep"></div>
+      <button class="btn-star-filter" id="btnStarFilter" onclick="toggleStarFilter()" title="Show starred only">★</button>
     </div>
 
     <!-- Row 2: Capa -->
@@ -359,9 +388,6 @@
 const API_URL    = "https://script.google.com/macros/s/AKfycbzk2vhu-qcKFBPqEImKGEZKSitpVZv1IQQEv5ZzG7pNfo-iPUWfvSoLWWnkoc8d8PQQ/exec";
 const PAGE_LIMIT = 50;
 
-// Subcapa options per capa — values match exact strings in capa_detail field.
-// indexOf is used server-side, so "Gobernanza IA comparada" matches cells that
-// contain it alongside other values (e.g. "Gobernanza IA comparada, Art. 9 ↔ …").
 const SUBCAPA_OPTIONS = {
   all: [
     { label: "— Subcapa —", value: "" },
@@ -426,7 +452,7 @@ const SUBCAPA_OPTIONS = {
 
 let state = {
   page: 1, search: "", importance: "", capa: "", capaKey: "",
-  sort: "found-desc",
+  sort: "found-desc", starFilter: false,
   rows: [], total: 0, total_pages: 1, has_next: false, has_prev: false,
   loading: false, lastFetch: null,
 };
@@ -443,7 +469,6 @@ function buildSubcapaDropdown(capaKey) {
 
   for (const item of items) {
     if (item.group) {
-      // grouped (all view)
       const grp = document.createElement("optgroup");
       grp.label = item.group;
       for (const opt of item.options) {
@@ -454,7 +479,6 @@ function buildSubcapaDropdown(capaKey) {
       }
       sel.appendChild(grp);
     } else {
-      // flat (capa-specific view)
       const o = document.createElement("option");
       o.value = item.value; o.textContent = item.label;
       if (o.value === currentVal) o.selected = true;
@@ -462,7 +486,6 @@ function buildSubcapaDropdown(capaKey) {
     }
   }
 
-  // If old value no longer exists in new options, reset
   if (sel.value !== currentVal) sel.value = "";
   updateDropdownStyle(sel);
 }
@@ -470,6 +493,17 @@ function buildSubcapaDropdown(capaKey) {
 function updateDropdownStyle(sel) {
   if (sel.value) sel.classList.add("filter-active");
   else sel.classList.remove("filter-active");
+}
+
+// ── Star filter toggle ────────────────────────────────────────────────────────
+function toggleStarFilter() {
+  state.starFilter = !state.starFilter;
+  const btn = document.getElementById("btnStarFilter");
+  if (state.starFilter) btn.classList.add("active");
+  else btn.classList.remove("active");
+  state.page = 1;
+  updateClearBtn();
+  fetchData();
 }
 
 // ── URL builder ───────────────────────────────────────────────────────────────
@@ -480,23 +514,17 @@ function buildUrl() {
     + "&sort=" + encodeURIComponent(state.sort);
   if (state.importance) url += "&importance=" + encodeURIComponent(state.importance);
   if (state.capa)       url += "&capa="       + encodeURIComponent(state.capa);
-  // capa_detail sent as its own parameter — indexOf match on capa_detail field
   const cd = document.getElementById("selCapaDetail").value;
   if (cd) url += "&capa_detail=" + encodeURIComponent(cd);
-  // evaluativa_criteria and content_type go into fulltext search
   const ev = document.getElementById("selEvaluativa").value;
   const tp = document.getElementById("selType").value;
+  // Star filter: pass starred=1 as a search term on the starred column
+  // We handle it client-side after fetch since the API doesn't have a starred param yet.
+  // (See filterStarred below.)
   const extra = [ev, tp].filter(Boolean).join(" ");
   const combined = [state.search, extra].filter(Boolean).join(" ");
   if (combined) url += "&search=" + encodeURIComponent(combined);
   return url;
-}
-
-function buildExtraSearch() {
-  // kept for clearAllFilters reference — capa_detail now uses its own param
-  const ev = document.getElementById("selEvaluativa").value;
-  const tp = document.getElementById("selType").value;
-  return [ev, tp].filter(Boolean).join(" ");
 }
 
 // ── JSONP ──────────────────────────────────────────────────────────────────────
@@ -512,9 +540,7 @@ function jsonp(url) {
   });
 }
 
-// ── Button counts — importance only, fed from stats returned by getPage ──────
-// Capa counts are omitted: capa field is multi-value per row, so counts would
-// be inflated (a row tagged "Teórica, Analítica" is counted in both capas).
+// ── Button counts ─────────────────────────────────────────────────────────────
 function updateAllButtonCounts(stats) {
   if (!stats) return;
   ["ALTA","MEDIA","BAJA"].forEach(k => {
@@ -533,13 +559,23 @@ async function fetchData() {
   try {
     const data = await jsonp(buildUrl());
     if (data.error) throw new Error(data.error);
-    state.total       = data.total;
-    state.total_pages = data.total_pages;
-    state.has_next    = data.has_next;
-    state.has_prev    = data.has_prev;
+
+    // Apply client-side star filter if active
+    // The API returns all rows; we filter here since the Apps Script doesn't
+    // have a `starred` parameter. For large datasets this is fine since
+    // PAGE_LIMIT caps the payload; starred filter narrows display only.
+    let rows = data.rows || [];
+    if (state.starFilter) {
+      rows = rows.filter(r => r.starred === "1" || r.starred === "true" || r.starred === "yes");
+    }
+
+    state.total       = state.starFilter ? rows.length : data.total;
+    state.total_pages = state.starFilter ? Math.max(1, Math.ceil(rows.length / PAGE_LIMIT)) : data.total_pages;
+    state.has_next    = state.starFilter ? false : data.has_next;
+    state.has_prev    = state.starFilter ? false : data.has_prev;
     state.page        = data.page || state.page;
     state.lastFetch   = new Date();
-    state.rows        = data.rows || [];
+    state.rows        = rows;
     renderHeader(data.stats || null);
     updateAllButtonCounts(data.stats || null);
     renderFlat();
@@ -555,6 +591,55 @@ async function fetchData() {
 }
 
 function refresh() { fetchData(); }
+
+// ── Star toggle on individual card ────────────────────────────────────────────
+async function toggleStar(event, url, cardStarBtnId) {
+  event.stopPropagation(); // don't expand the card
+
+  const btn = document.getElementById(cardStarBtnId);
+  if (!btn) return;
+
+  const isStarred = btn.classList.contains("starred");
+  const newVal = isStarred ? "" : "1";
+
+  // Optimistic UI
+  btn.classList.add("saving");
+  btn.classList.toggle("starred", !isStarred);
+  btn.title = !isStarred ? "Unstar" : "Star";
+
+  try {
+    const resp = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "updateByUrl",
+        url: url,
+        fields: { starred: newVal }
+      })
+    });
+    const result = await resp.json();
+    if (result.error) throw new Error(result.error);
+
+    // Update the row in local state so re-renders stay consistent
+    const row = state.rows.find(r => r.url === url);
+    if (row) row.starred = newVal;
+
+    // If star filter is active and we just unstarred, remove from view
+    if (state.starFilter && !newVal) {
+      state.rows = state.rows.filter(r => r.url !== url);
+      state.total = state.rows.length;
+      renderFlat();
+    }
+  } catch(e) {
+    // Revert optimistic update on failure
+    btn.classList.toggle("starred", isStarred);
+    btn.title = isStarred ? "Unstar" : "Star";
+    console.error("Star save failed:", e.message);
+    alert("Could not save star: " + e.message);
+  } finally {
+    btn.classList.remove("saving");
+  }
+}
 
 // ── Filters ───────────────────────────────────────────────────────────────────
 function toggleImp(imp) {
@@ -587,7 +672,6 @@ function toggleCapa(capa) {
   state.capaKey = newCapaKey;
   state.capa    = newCapaKey ? (capaValueMap[newCapaKey] || newCapaKey) : "";
 
-  // Re-build subcapa dropdown, preserving value if still valid
   buildSubcapaDropdown(newCapaKey);
   state.page = 1; updateClearBtn(); fetchData();
 }
@@ -624,7 +708,8 @@ function clearAllFilters() {
     document.getElementById("btn-" + c).className = "btn-capa"
   );
   state.search = ""; state.importance = ""; state.capa = ""; state.capaKey = "";
-  state.sort = "found-desc"; state.page = 1;
+  state.sort = "found-desc"; state.page = 1; state.starFilter = false;
+  document.getElementById("btnStarFilter").classList.remove("active");
   buildSubcapaDropdown("");
   updateXBtn(); updateClearBtn(); fetchData();
 }
@@ -638,7 +723,7 @@ function updateClearBtn() {
   const cd = document.getElementById("selCapaDetail").value;
   const ev = document.getElementById("selEvaluativa").value;
   const tp = document.getElementById("selType").value;
-  const active = state.importance || state.capa || state.search || cd || ev || tp;
+  const active = state.importance || state.capa || state.search || cd || ev || tp || state.starFilter;
   document.getElementById("btnClearAll").style.display = active ? "inline" : "none";
 }
 
@@ -647,7 +732,7 @@ function goPage(p) { state.page = p; fetchData(); }
 // ── Render ────────────────────────────────────────────────────────────────────
 function renderHeader(stats) {
   const el = document.getElementById("headerStats");
-  const hasFilter = state.importance || state.capa || state.search
+  const hasFilter = state.importance || state.capa || state.search || state.starFilter
     || document.getElementById("selCapaDetail").value
     || document.getElementById("selEvaluativa").value
     || document.getElementById("selType").value;
@@ -675,8 +760,21 @@ function renderFlat() {
 function renderCard(item, id) {
   const imp    = item.importance || "BAJA";
   const isOpen = expandedIds.has(id);
+  const isStarred = item.starred === "1" || item.starred === "true" || item.starred === "yes";
+  const starBtnId = "star-" + id;
+  // Escape url for inline handler
+  const urlEscaped = (item.url || "").replace(/'/g, "\\'");
 
   const metaParts = [];
+
+  // Star button — first in meta line, before importance badge
+  const starBtn = `<button
+    class="btn-star${isStarred ? " starred" : ""}"
+    id="${starBtnId}"
+    title="${isStarred ? "Unstar" : "Star"}"
+    onclick="toggleStar(event, '${urlEscaped}', '${starBtnId}')"
+  >★</button>`;
+
   const capaRaw = (item.capa || "").toLowerCase();
   const capaClass = capaRaw.includes("teór") || capaRaw.includes("teor")   ? "meta-capa-teorica"
                   : capaRaw.includes("analí") || capaRaw.includes("anali") ? "meta-capa-analitica"
@@ -719,7 +817,7 @@ function renderCard(item, id) {
   return `
     <article onclick="toggleCard('${id}')">
       <div class="card-meta">
-        <span class="card-imp imp-${imp}">${{ALTA:"ALTA",MEDIA:"MEDIA",BAJA:"BAJA"}[imp]||imp}</span>${metaLine}
+        ${starBtn}<span class="card-imp imp-${imp}">${{ALTA:"ALTA",MEDIA:"MEDIA",BAJA:"BAJA"}[imp]||imp}</span>${metaLine}
       </div>
       <h2 class="card-title">${item.title || "(no title)"}</h2>
       <div class="card-byline">${byline}</div>
@@ -775,7 +873,8 @@ function exportMarkdown() {
   if (!state.rows.length) { alert("Nothing to export."); return; }
   const lines = ["# Thesis Knowledge Base Export", `_${new Date().toLocaleDateString()}_`, ""];
   for (const item of state.rows) {
-    lines.push(`## ${item.title || "(no title)"}`);
+    const starred = (item.starred === "1" || item.starred === "true") ? "★ " : "";
+    lines.push(`## ${starred}${item.title || "(no title)"}`);
     lines.push(`**${item.importance}** · ${item.capa || ""} · ${item.capa_detail || ""} · ${item.evaluativa_criteria || ""}`);
     lines.push(`${item.source || ""} · ${formatDate(item.date_published)} · ${item.content_type || ""}`);
     if (item.scholar) lines.push(`Scholar: ${item.scholar}`);
